@@ -34,11 +34,11 @@ const ExhibitionInfo = () => {
               MAIN THEMES
             </h3>
             <ul className="text-xs font-mono space-y-2">
-              <li>→ WORK AND ALIENATION</li>
-              <li>→ TEXTILE RESISTANCE</li>
-              <li>→ POLITICAL MATERIALITY</li>
-              <li>→ DOMESTIC PERFORMANCE</li>
-              <li>→ ECONOMIES OF CARE</li>
+              <li>→ MATERIAL MEMORY</li>
+              <li>→ URBAN TEXTILE INTERVENTIONS</li>
+              <li>→ FASHION WASTE CRITIQUE</li>
+              <li>→ IMMIGRANT LABOR VISIBILITY</li>
+              <li>→ UPDATED RITUALS</li>
             </ul>
           </div>
         </div>

@@ -16,13 +16,19 @@ const Footer = () => {
             NON-WEARABLE ART BY THERAPY RECYCLE & EXORCISE
           </div>
           <div className="mt-2">
-            <img 
-              src="/img/therapy-logo.png" 
-              alt="Therapy Recycle & Exorcise" 
-              className="w-[120px] h-auto"
-              width="120"
-              height="auto"
-            />
+            <a 
+              href="https://therapy-berlin.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+            >
+              <img 
+                src="/img/therapy-logo.png" 
+                alt="Therapy Recycle & Exorcise" 
+                className="w-[120px] h-auto"
+                width="120"
+                height="auto"
+              />
+            </a>
           </div>
         </div>
         

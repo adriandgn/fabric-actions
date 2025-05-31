@@ -13,7 +13,7 @@ const UrbanInterventions = () => {
   const [itemsPerView, setItemsPerView] = useState(3);
   const carouselRef = useRef<HTMLDivElement>(null);
 
-  // Sample data - replace with your actual data
+  // Only the first 3 interventions
   const interventions: Intervention[] = [
     {
       id: 1,
@@ -32,49 +32,7 @@ const UrbanInterventions = () => {
       title: 'Test #3 - Fabric Remnants',
       date: 'JUNE 5',
       image: '/img/501947555_17844181419497041_7567780357535951913_n.jpg'
-    },
-    {
-      id: 4,
-      title: 'Test #4 - Threaded Spaces',
-      date: 'JUNE 6',
-      image: 'https://images.unsplash.com/photo-1517705008128-361805f42e86?w=500&auto=format&fit=crop&q=60'
-    },
-    {
-      id: 5,
-      title: 'Test #5 - Material Memory',
-      date: 'JUNE 7',
-      image: 'https://images.unsplash.com/photo-1432888622747-4eb9a8efeb07?w=500&auto=format&fit=crop&q=60'
-    },
-    {
-      id: 6,
-      title: 'Test #6 - Urban Patchwork',
-      date: 'JUNE 8',
-      image: 'https://images.unsplash.com/photo-1501386761578-eacb2ebf4b09?w=500&auto=format&fit=crop&q=60'
-    },
-    {
-      id: 7,
-      title: 'Test #7 - Textile Echoes',
-      date: 'JUNE 9',
-      image: 'https://images.unsplash.com/photo-1503341338985-c0477be52513?w=500&auto=format&fit=crop&q=60'
-    },
-    {
-      id: 8,
-      title: 'Test #8 - Fabric Traces',
-      date: 'JUNE 10',
-      image: 'https://images.unsplash.com/photo-1571902943201-8ec2e2c7a33b?w=500&auto=format&fit=crop&q=60'
-    },
-    {
-      id: 9,
-      title: 'Test #9 - Urban Stitches',
-      date: 'JUNE 11',
-      image: 'https://images.unsplash.com/photo-1527689368864-3a821dbccc34?w=500&auto=format&fit=crop&q=60'
-    },
-    {
-      id: 10,
-      title: 'Test #10 - Matåerial Dialogues',
-      date: 'JUNE 12',
-      image: 'https://images.unsplash.com/photo-1516762689617-e1cffcef479d?w=500&auto=format&fit=crop&q=60'
-    },
+    }
   ];
 
   const totalItems = interventions.length;

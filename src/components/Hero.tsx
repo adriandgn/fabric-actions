@@ -5,7 +5,7 @@ const Hero = () => {
       {/* Header incómodo */}
       <div className="flex justify-between items-start">
         <div className="text-xs font-mono tracking-wider">
-          MAIN EXPOSITION - CULTURAL THREADS 
+          MAIN EXHIBITION - CULTURAL THREADS 
         </div>
         <div className="text-xs font-mono tracking-wider">
            BERLIN 2025

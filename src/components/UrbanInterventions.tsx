@@ -11,6 +11,7 @@ interface Intervention {
 const UrbanInterventions = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [itemsPerView, setItemsPerView] = useState(3);
+  const [isMobile, setIsMobile] = useState(false);
   const carouselRef = useRef<HTMLDivElement>(null);
 
   // Only the first 3 interventions
@@ -36,25 +37,19 @@ const UrbanInterventions = () => {
   ];
 
   const totalItems = interventions.length;
-  const maxIndex = Math.ceil(totalItems / itemsPerView) - 1;
 
-  const next = () => {
-    setCurrentIndex((prevIndex) => (prevIndex < maxIndex ? prevIndex + 1 : 0));
-  };
-
-  const prev = () => {
-    setCurrentIndex((prevIndex) => (prevIndex > 0 ? prevIndex - 1 : maxIndex));
-  };
-
-  // Handle window resize
+  // Handle window resize and set items per view
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 768) {
         setItemsPerView(1);
+        setIsMobile(true);
       } else if (window.innerWidth < 1024) {
         setItemsPerView(2);
+        setIsMobile(false);
       } else {
         setItemsPerView(3);
+        setIsMobile(false);
       }
     };
 
@@ -63,6 +58,19 @@ const UrbanInterventions = () => {
     
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+  
+  // Calculate visible items and navigation
+  const visibleItems = isMobile ? 1 : itemsPerView;
+  const maxIndex = Math.max(0, totalItems - visibleItems);
+  
+  // Handle navigation based on device type
+  const next = () => {
+    setCurrentIndex(prevIndex => Math.min(prevIndex + (isMobile ? 1 : itemsPerView), maxIndex));
+  };
+
+  const prev = () => {
+    setCurrentIndex(prevIndex => Math.max(prevIndex - (isMobile ? 1 : itemsPerView), 0));
+  };
 
   return (
     <section className="px-6 md:px-12 py-16 md:py-24 bg-black">
@@ -96,15 +104,15 @@ const UrbanInterventions = () => {
           <div 
             className="flex transition-transform duration-300 ease-in-out"
             style={{
-              transform: `translateX(-${currentIndex * (100 / itemsPerView)}%)`,
-              width: `${(totalItems * 100) / itemsPerView}%`
+              transform: `translateX(-${(currentIndex * 100) / totalItems}%)`,
+              width: `${(totalItems * 100) / visibleItems}%`
             }}
           >
             {interventions.map((intervention) => (
               <div 
                 key={intervention.id}
                 className={`px-2 transition-all duration-300`}
-                style={{ width: `${100 / itemsPerView}%` }}
+                style={{ width: `${100 / visibleItems}%` }}
               >
                 <div className="brutalist-border p-4 h-full flex flex-col">
                   <div className="aspect-square overflow-hidden mb-4">
@@ -123,19 +131,7 @@ const UrbanInterventions = () => {
         </div>
       </div>
       
-      {/* Indicators */}
-      <div className="flex justify-center mt-8 space-x-2">
-        {Array.from({ length: maxIndex + 1 }).map((_, index) => (
-          <button
-            key={index}
-            onClick={() => setCurrentIndex(index)}
-            className={`w-3 h-3 rounded-full transition-colors ${
-              index === currentIndex ? 'bg-white' : 'bg-gray-600'
-            }`}
-            aria-label={`Go to slide ${index + 1}`}
-          />
-        ))}
-      </div>
+
     </section>
   );
 };

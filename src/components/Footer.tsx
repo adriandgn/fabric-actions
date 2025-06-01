@@ -86,15 +86,7 @@ const Footer = () => {
               </div>
             </div>
             
-            <div className="h-4"></div>
-            
-            <div>
-              <div className="font-bold mb-2">CREDITS</div>
-              <div className="space-y-1">
-                <div>ORGANIZER: Sepideh Ahadi</div>
-                <div>DESIGNER: Adrian Aguirre</div>
-              </div>
-            </div>
+
           </div>
         </div>
       </div>

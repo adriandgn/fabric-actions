@@ -5,7 +5,7 @@ const Hero = () => {
       {/* Header incómodo */}
       <div className="flex justify-between items-start">
         <div className="text-xs font-mono tracking-wider">
-          MAIN EXHIBITION - CULTURAL THREADS 
+          UPCOMING EXHIBITION - CULTURAL THREADS 
         </div>
         <div className="text-xs font-mono tracking-wider">
            BERLIN 2025
@@ -14,12 +14,13 @@ const Hero = () => {
 
       {/* Título principal con espaciado incómodo */}
       <div className="flex-1 flex items-center">
-        <div className="w-full">
+        <div className="w-full overflow-hidden">
           <h1 
-            className="text-6xl md:text-8xl lg:text-9xl font-bold leading-none tracking-tighter text-left text-glitch font-anthony"
+            className="text-5xl xs:text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-bold leading-none tracking-tight text-left text-glitch font-anthony break-words"
             data-text="FABRIC[ACTIONS]"
+            style={{ wordBreak: 'break-word' }}
           >
-            FABRIC[ACTION{"S"}]
+            FABRIC[ACTIONS]
           </h1>
           
           {/* Espaciado incómodo intencional */}

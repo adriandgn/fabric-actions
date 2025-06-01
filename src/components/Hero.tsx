@@ -15,7 +15,7 @@ const Hero = () => {
       {/* Título principal con espaciado incómodo */}
       <div className="flex-1 flex items-center">
         <div className="w-full overflow-hidden">
-          <div className="w-full">
+          <div className="w-full ml-1 sm:ml-0">
             <h1 className="text-5xl xs:text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-bold leading-none tracking-tight text-left font-anthony">
               <span className="relative inline-block text-glitch" data-text="FABRIC">
                 FABRIC

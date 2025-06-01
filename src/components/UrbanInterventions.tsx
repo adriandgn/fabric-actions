@@ -19,19 +19,19 @@ const UrbanInterventions = () => {
     {
       id: 1,
       title: 'Test #1 - Your trash, my treasure',
-      date: 'JUNE 3',
+      date: 'MAY 29',
       image: '/img/501291506_17844186738497041_8104670190827784702_n.jpg'
     },
     {
       id: 2,
       title: 'Test #2 - Your trash, my treasure',
-      date: 'JUNE 4',
+      date: 'MAY 30',
       image: '/img/501445643_17844178728497041_2990602597438234993_n.jpg'
     },
     {
       id: 3,
       title: 'Test #3 - Fabric Remnants',
-      date: 'JUNE 5',
+      date: 'JUNE 1',
       image: '/img/501947555_17844181419497041_7567780357535951913_n.jpg'
     }
   ];
@@ -114,12 +114,13 @@ const UrbanInterventions = () => {
                 className={`px-2 transition-all duration-300`}
                 style={{ width: `${100 / visibleItems}%` }}
               >
-                <div className="brutalist-border p-4 h-full flex flex-col">
-                  <div className="aspect-square overflow-hidden mb-4">
+                <div className="brutalist-border p-2 sm:p-4 h-full flex flex-col">
+                  <div className="aspect-square overflow-hidden mb-2 sm:mb-4 max-h-[60vh] sm:max-h-none">
                     <img 
                       src={intervention.image} 
                       alt={intervention.title}
                       className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                      style={{ maxHeight: 'calc(100vh - 300px)' }}
                     />
                   </div>
                   <h3 className="font-bold text-lg mb-1">{intervention.title}</h3>

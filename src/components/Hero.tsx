@@ -15,21 +15,16 @@ const Hero = () => {
       {/* Título principal con espaciado incómodo */}
       <div className="flex-1 flex items-center">
         <div className="w-full overflow-hidden">
-          <h1 
-            className="text-5xl xs:text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-bold leading-none tracking-tight text-left text-glitch font-anthony whitespace-nowrap overflow-visible"
-            data-text="FABRIC[ACTIONS]"
-            style={{ 
-              display: 'inline-block',
-              transform: 'scale(1)',
-              transformOrigin: 'left center',
-              maxWidth: '100%',
-              width: 'auto',
-              whiteSpace: 'nowrap',
-              overflow: 'visible'
-            }}
-          >
-            FABRIC[ACTIONS]
-          </h1>
+          <div className="w-full">
+            <h1 className="text-5xl xs:text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-bold leading-none tracking-tight text-left font-anthony">
+              <span className="relative inline-block text-glitch" data-text="FABRIC">
+                FABRIC
+              </span>
+              <span className="block sm:inline-block sm:ml-0 -ml-2 relative text-glitch" data-text="[ACTIONS]">
+                [ACTIONS]
+              </span>
+            </h1>
+          </div>
           
           {/* Espaciado incómodo intencional */}
           <div className="h-16 md:h-24"></div>

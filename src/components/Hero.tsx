@@ -16,9 +16,17 @@ const Hero = () => {
       <div className="flex-1 flex items-center">
         <div className="w-full overflow-hidden">
           <h1 
-            className="text-5xl xs:text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-bold leading-none tracking-tight text-left text-glitch font-anthony break-words"
+            className="text-5xl xs:text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-bold leading-none tracking-tight text-left text-glitch font-anthony whitespace-nowrap overflow-visible"
             data-text="FABRIC[ACTIONS]"
-            style={{ wordBreak: 'break-word' }}
+            style={{ 
+              display: 'inline-block',
+              transform: 'scale(1)',
+              transformOrigin: 'left center',
+              maxWidth: '100%',
+              width: 'auto',
+              whiteSpace: 'nowrap',
+              overflow: 'visible'
+            }}
           >
             FABRIC[ACTIONS]
           </h1>

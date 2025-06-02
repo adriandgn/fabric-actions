@@ -1,4 +1,6 @@
 
+import Newsletter from './Newsletter';
+
 const Footer = () => {
   return (
     <footer className="px-6 md:px-12 py-16 md:py-24 border-t-2 border-white">
@@ -32,9 +34,9 @@ const Footer = () => {
           </div>
         </div>
         
-        {/* Columna 2 - Espacio para futuros enlaces */}
+        {/* Columna 2 - Newsletter */}
         <div className="mt-8 md:mt-0">
-          {/* Espacio reservado para futuros enlaces */}
+          <Newsletter />
         </div>
         
         {/* Columna 3 - Redes sociales y créditos */}

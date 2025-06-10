@@ -5,7 +5,7 @@ const Hero = () => {
       {/* Header incómodo */}
       <div className="flex justify-between items-start">
         <div className="text-xs font-mono tracking-wider">
-          UPCOMING EXHIBITION - CULTURAL THREADS 
+          LATEST EXHIBITION - CULTURAL THREADS 
         </div>
         <div className="text-xs font-mono tracking-wider">
            BERLIN 2025
@@ -41,20 +41,14 @@ const Hero = () => {
       {/* Información abajo con disposición asimétrica */}
       <div className="flex justify-between items-end">
         <div className="text-xs font-mono">
-          <div>JUNE 3-7 | 13:00 - 19:00 </div>
-          <div className="mt-1">PLATTE·Berlin</div>
-          <div>Memhardstraße 8</div>
+          <div>NEXT EXHIBITION </div>
+          <div>JULY 3 | 13:00 - 19:00 </div>
+          <div className="mt-1">RARE Collective Shop - Berlin</div>
+          <div>Kopernikusstraße 21</div>
         </div>
         
         <div className="text-right text-xs font-mono">
-          <a 
-            href="https://www.eventbrite.com/e/cultural-threads-2025-tickets-1377741254179" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="brutalist-border inline-block px-3 py-2 hover:bg-white hover:text-black transition-colors duration-200"
-          >
-            FREE ENTRY - All are welcome
-          </a>
+          <a href="#footer" className="hover:underline">If you are interested in our work, please sign up to our newsletter.</a>
         </div>
       </div>
     </section>

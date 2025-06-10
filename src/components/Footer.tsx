@@ -3,7 +3,7 @@ import Newsletter from './Newsletter';
 
 const Footer = () => {
   return (
-    <footer className="px-6 md:px-12 py-16 md:py-24 border-t-2 border-white">
+    <footer id="footer" className="px-6 md:px-12 py-16 md:py-24 border-t-2 border-white">
       {/* Espaciado incómodo inicial */}
       <div className="h-8"></div>
       
@@ -45,16 +45,6 @@ const Footer = () => {
             <div>
               <div className="font-bold mb-2">FOLLOW US ON INSTAGRAM</div>
               <div className="space-y-1">
-                <div>
-                  <a 
-                    href="https://instagram.com/cultural_threads_berlin" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="hover:underline"
-                  >
-                    @cultural_threads_berlin
-                  </a>
-                </div>
                 <div>
                   <a 
                     href="https://instagram.com/fabric_actions" 

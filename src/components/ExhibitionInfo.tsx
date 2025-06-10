@@ -11,12 +11,12 @@ const ExhibitionInfo = () => {
         {/* Columna 2 */}
         <div>
           <h2 className="text-2xl md:text-3xl font-bold font-grotesk mb-8 leading-tight">
-            CONCEPT
+            WHAT'S FABRIC[ACTIONS]?
           </h2>
           
           <div className="space-y-6 text-sm font-mono leading-relaxed">
             <p>
-              A series of urban interventions using found textiles to reclaim public space and expose the fashion industry's cycle of overproduction, waste, and privilege. As an immigrant from Argentina, my connection to materials is shaped by scarcity. In the '80s and '90s, we learned to mend and repurpose out of necessity — a legacy that contrasts sharply with disposable culture in the Global North.
+              A series of urban interventions and studio pieces using found textiles to reclaim public space and expose the fashion industry's cycle of overproduction, waste, and privilege. As an immigrant from Argentina, my connection to materials is shaped by scarcity. In the '80s and '90s, we learned to mend and repurpose out of necessity — a legacy that contrasts sharply with disposable culture in the Global North.
             </p>
             <p>
               These installations — part ritual, part protest — challenge ideas of waste, value, and inequality embedded in the fashion system. They take shape as abstract "spills" made from street-found fabrics, placed directly in public or on discarded wood.
@@ -27,18 +27,23 @@ const ExhibitionInfo = () => {
           </div>
         </div>
         
-        {/* Columna 3 */}
-        <div className="mt-16 md:mt-0">
+        {/* Columna 3 - LATEST y NEXT EXHIBITIONS juntos */}
+        <div className="flex flex-col gap-8 mt-16 md:mt-0">
           <div className="brutalist-border p-6">
             <h3 className="text-lg font-bold font-grotesk mb-4">
-              MAIN THEMES
+              NEXT EXHIBITIONS
             </h3>
             <ul className="text-xs font-mono space-y-2">
-              <li>→ MATERIAL MEMORY</li>
+              <li><a href="#about-the-event" className="hover:underline">→ BERLIN FASHION WEEK - RARE COLLECTIVE</a></li>
+            </ul>
+          </div>
+          <div className="brutalist-border p-6">
+            <h3 className="text-lg font-bold font-grotesk mb-4">
+              LATEST EXHIBITIONS
+            </h3>
+            <ul className="text-xs font-mono space-y-2">
+              <li>→ CULTURAL THREADS</li>
               <li>→ URBAN TEXTILE INTERVENTIONS</li>
-              <li>→ FASHION WASTE CRITIQUE</li>
-              <li>→ IMMIGRANT LABOR VISIBILITY</li>
-              <li>→ UPDATED RITUALS</li>
             </ul>
           </div>
         </div>

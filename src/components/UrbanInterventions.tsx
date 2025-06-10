@@ -73,10 +73,19 @@ const UrbanInterventions = () => {
   };
 
   return (
-    <section className="px-6 md:px-12 py-16 md:py-24 bg-black">
-      <h2 className="text-2xl md:text-3xl font-bold font-grotesk mb-12 text-center">
-        URBAN INTERVENTIONS
-      </h2>
+    <section className="px-6 md:px-12 py-16 md:py-24">
+      <div className="flex justify-between items-end mb-12">
+        <h2 className="text-3xl md:text-4xl font-bold font-grotesk">
+          URBAN INTERVENTIONS
+        </h2>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="md:col-span-2">
+            <p className="text-sm font-mono leading-relaxed mb-6">
+              Concept: Urban interventions challenge perceptions of public space and material value.
+            </p>
+          </div>
+        </div>
       
       <div className="relative">
         {/* Navigation Arrows */}

@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import ImageLightbox from './ImageLightbox'; // Added import for ImageLightbox
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface Piece {
@@ -9,6 +10,9 @@ interface Piece {
 }
 
 const Studiopieces = () => {
+  // State for ImageLightbox
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [itemsPerView, setItemsPerView] = useState(3);
   const [isMobile, setIsMobile] = useState(false);
@@ -18,25 +22,54 @@ const Studiopieces = () => {
   const pieces: Piece[] = [
     {
       id: 1,
-      title: 'Piece #1 - Studio Work',
-      date: 'JUNE 5',
-      image: '/img/studio_piece1.jpg'
+      title: 'Prêt-Art-porter, Dress on a frame',
+      date: 'Framed yet wearable dress, 165 x 64 cm',
+      image: '/img/studio-1.png'
     },
     {
       id: 2,
-      title: 'Piece #2 - Studio Work',
-      date: 'JUNE 6',
-      image: '/img/studio_piece2.jpg'
+      title: 'Urban Spill 1',
+      date: 'Garments sewn on canvas, 118 x 78 cm',
+      image: '/img/studio-2.png'
     },
     {
       id: 3,
-      title: 'Piece #3 - Studio Work',
-      date: 'JUNE 7',
-      image: '/img/studio_piece3.jpg'
+      title: 'Urban Spill 2',
+      date: 'Garments sewn on canvas, 78 x 50 cm',
+      image: '/img/studio-3.png'
+    },
+    {
+      id: 4,
+      title: 'Fatberg Stalactite',
+      date: 'Hanging textiles and shoes installation, 140 × 30 cm',
+      image: '/img/studio-4.png'
+    },
+    {
+      id: 5,
+      title: '10 Years of Therapy I & II',
+      date: 'Mixed media, 150 × 60 cm each',
+      image: '/img/studio-5.jpg'
     }
   ];
 
   const totalItems = pieces.length;
+
+  // Prepare images for Lightbox
+  const lightboxImages = pieces.map(piece => ({
+    src: piece.image,
+    alt: piece.title, // Using title as alt, consider adding a dedicated alt field for better accessibility
+    title: piece.title
+  }));
+
+  // Functions to handle Lightbox visibility
+  const openLightbox = (index: number) => {
+    setSelectedImageIndex(index);
+    setLightboxOpen(true);
+  };
+
+  const closeLightbox = () => {
+    setLightboxOpen(false);
+  };
 
   // Handle window resize and set items per view
   useEffect(() => {
@@ -73,6 +106,7 @@ const Studiopieces = () => {
   };
 
   return (
+    <>
     <section className="px-6 md:px-12 py-16 md:py-24">
       <div className="flex justify-between items-end mb-12">
         <h2 className="text-3xl md:text-4xl font-bold font-grotesk">
@@ -82,7 +116,7 @@ const Studiopieces = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="md:col-span-2">
             <p className="text-sm font-mono leading-relaxed mb-6">
-              Concept: Studio pieces created in an experimental context, exploring materials and forms.
+              Studio pieces created in an experimental context, exploring materials and forms using textiles found on the street as both pigment and message.
             </p>
           </div>
         </div>
@@ -120,8 +154,9 @@ const Studiopieces = () => {
             {pieces.map((piece) => (
               <div 
                 key={piece.id}
-                className={`px-2 transition-all duration-300`}
+                className={`px-2 transition-all duration-300 cursor-pointer`}
                 style={{ width: `${100 / visibleItems}%` }}
+                onClick={() => openLightbox(pieces.findIndex(p => p.id === piece.id))} // Added onClick to open lightbox
               >
                 <div className="brutalist-border p-2 sm:p-4 h-full flex flex-col">
                   <div className="aspect-square overflow-hidden mb-2 sm:mb-4 max-h-[60vh] sm:max-h-none">
@@ -143,6 +178,16 @@ const Studiopieces = () => {
       
 
     </section>
+
+      {/* Render ImageLightbox conditionally */}
+      {lightboxOpen && (
+        <ImageLightbox
+          images={lightboxImages}
+          startIndex={selectedImageIndex}
+          onClose={closeLightbox}
+        />
+      )}
+    </>
   );
 };
 

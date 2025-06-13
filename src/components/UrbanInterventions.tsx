@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import ImageLightbox from './ImageLightbox'; // Added import for ImageLightbox
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface Intervention {
@@ -9,6 +10,9 @@ interface Intervention {
 }
 
 const UrbanInterventions = () => {
+  // State for ImageLightbox
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [itemsPerView, setItemsPerView] = useState(3);
   const [isMobile, setIsMobile] = useState(false);
@@ -18,25 +22,48 @@ const UrbanInterventions = () => {
   const interventions: Intervention[] = [
     {
       id: 1,
-      title: 'Test #1 - Your trash, my treasure',
+      title: 'Your trash, my treasure',
       date: 'MAY 29',
       image: '/img/501291506_17844186738497041_8104670190827784702_n.jpg'
     },
     {
       id: 2,
-      title: 'Test #2 - Your trash, my treasure',
+      title: 'Your trash, my treasure',
       date: 'MAY 30',
       image: '/img/501445643_17844178728497041_2990602597438234993_n.jpg'
     },
     {
       id: 3,
-      title: 'Test #3 - Fabric Remnants',
+      title: 'Fabric Remnants',
       date: 'JUNE 1',
       image: '/img/501947555_17844181419497041_7567780357535951913_n.jpg'
-    }
+    },
+    {
+      id: 4,
+      title: 'Crawling clothes in white, red and blue.',
+      date: 'JUNE 2',
+      image: '/img/503053513_17844825306497041_6652826205093340109_n.jpg'
+    },
   ];
 
   const totalItems = interventions.length;
+
+  // Prepare images for Lightbox
+  const lightboxImages = interventions.map(intervention => ({
+    src: intervention.image,
+    alt: intervention.title, // Using title as alt, consider adding a dedicated alt field for better accessibility
+    title: intervention.title
+  }));
+
+  // Functions to handle Lightbox visibility
+  const openLightbox = (index: number) => {
+    setSelectedImageIndex(index);
+    setLightboxOpen(true);
+  };
+
+  const closeLightbox = () => {
+    setLightboxOpen(false);
+  };
 
   // Handle window resize and set items per view
   useEffect(() => {
@@ -73,6 +100,7 @@ const UrbanInterventions = () => {
   };
 
   return (
+    <>
     <section className="px-6 md:px-12 py-16 md:py-24">
       <div className="flex justify-between items-end mb-12">
         <h2 className="text-3xl md:text-4xl font-bold font-grotesk">
@@ -82,8 +110,7 @@ const UrbanInterventions = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="md:col-span-2">
             <p className="text-sm font-mono leading-relaxed mb-6">
-              Concept: Urban interventions challenge perceptions of public space and material value.
-            </p>
+Installation arranged directly on the street or on canvases from abandoned wood that resemble abstract brush strokes, vomits or spills.   </p>
           </div>
         </div>
       
@@ -120,8 +147,9 @@ const UrbanInterventions = () => {
             {interventions.map((intervention) => (
               <div 
                 key={intervention.id}
-                className={`px-2 transition-all duration-300`}
+                className={`px-2 transition-all duration-300 cursor-pointer`}
                 style={{ width: `${100 / visibleItems}%` }}
+                onClick={() => openLightbox(interventions.findIndex(i => i.id === intervention.id))} // Added onClick to open lightbox
               >
                 <div className="brutalist-border p-2 sm:p-4 h-full flex flex-col">
                   <div className="aspect-square overflow-hidden mb-2 sm:mb-4 max-h-[60vh] sm:max-h-none">
@@ -143,6 +171,16 @@ const UrbanInterventions = () => {
       
 
     </section>
+
+      {/* Render ImageLightbox conditionally */}
+      {lightboxOpen && (
+        <ImageLightbox
+          images={lightboxImages}
+          startIndex={selectedImageIndex}
+          onClose={closeLightbox}
+        />
+      )}
+    </>
   );
 };
 

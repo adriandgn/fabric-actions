@@ -77,8 +77,24 @@ const Footer = () => {
                 </div>
               </div>
             </div>
-            
-
+            <div className="mt-4">
+              <div className="font-bold mb-2">LEGAL</div>
+              <div className="space-y-1">
+                <a 
+                  href="/impressum" 
+                  className="hover:underline"
+                >
+                  Impressum
+                </a><br />
+              
+                <a 
+                  href="/datenschutzerklarung" 
+                  className="hover:underline"
+                >
+                  Datenschutzerklärung
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -89,7 +105,7 @@ const Footer = () => {
       {/* Copyright con posicionamiento extraño */}
       <div className="flex justify-between items-end">
         <div className="text-xs font-mono">
-          © 2025 fabric[actions]
+          2025 © fabric[actions]
         </div>
         
         <div className="brutalist-border px-4 py-2 text-xs font-mono">

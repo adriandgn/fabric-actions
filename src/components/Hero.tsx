@@ -44,7 +44,7 @@ const Hero = () => {
           <div>NEXT EXHIBITION </div>
           <div>JULY 3 | 13:00 - 19:00 </div>
           <div className="mt-1">RARE Collective Shop - Berlin</div>
-          <div>Kopernikusstraße 21</div>
+          <div>Kopernikusstraße 21, 10245 Berlin</div>
         </div>
         
         <div className="text-right text-xs font-mono">

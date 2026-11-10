@@ -6,7 +6,7 @@ const Impressum = () => {
       <div className="flex-1">
         <div className="p-6 md:p-12">
           <h1 className="text-4xl md:text-5xl font-bold font-anthony mb-8">Impressum</h1>
-          
+
           <div className="text-lg md:text-xl font-mono">
             <h2 className="text-xl font-bold mb-4">Angaben gemäß § 5 DDG</h2>
             <p className="mb-8">

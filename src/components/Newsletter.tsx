@@ -24,17 +24,13 @@ const Newsletter = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('https://api.brevo.com/v3/contacts', {
+      const response = await fetch('/api/newsletter', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'api-key': import.meta.env.VITE_BREVO_API_KEY,
-          'accept': 'application/json',
         },
         body: JSON.stringify({
           email: email,
-          listIds: [Number(import.meta.env.VITE_BREVO_LIST_ID)],
-          updateEnabled: true
         }),
       });
 
@@ -44,9 +40,7 @@ const Newsletter = () => {
         setSuccessMessage('Thank you for subscribing!');
         setEmail('');
       } else {
-        const errorData = await response.json();
-        console.error('Subscription error:', errorData);
-        setErrorMessage(errorData.message || 'Error processing your subscription. Please try again.');
+        setErrorMessage('Error processing your subscription. Please try again.');
       }
     } catch (error) {
       setIsSubmitting(false);

@@ -1,10 +1,11 @@
 
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/lib/supabaseClient';
+import { api } from '@/lib/api';
 
 // Define type for exhibition info
 interface ExhibitionInfo {
   last_exhibition: string;
+  header_label: string;
   next_exhibition: string;
   next_exhibition_date: string;
   next_exhibition_address: string;
@@ -13,11 +14,7 @@ interface ExhibitionInfo {
 const Hero = () => {
   const { data, isLoading, error } = useQuery<ExhibitionInfo[]> ({
     queryKey: ['exhibition_info'],
-    queryFn: async () => {
-      const { data, error } = await supabase.from('exhibition_info').select('*');
-      if (error) throw error;
-      return data;
-    },
+    queryFn: () => api.list<ExhibitionInfo>('exhibition_info'),
   });
 
   if (isLoading) {
@@ -35,10 +32,10 @@ const Hero = () => {
       {/* Header */}
       <div className="flex justify-between items-start">
         <div className="text-xs font-mono tracking-wider">
-          {exhibition?.last_exhibition || 'LATEST EXHIBITION - CULTURAL THREADS'}
+          {exhibition?.last_exhibition ?? 'LATEST EXHIBITION - CULTURAL THREADS'}
         </div>
         <div className="text-xs font-mono tracking-wider">
-          {exhibition?.next_exhibition || 'BERLIN 2025'}
+          {exhibition?.header_label ?? 'BERLIN 2025'}
         </div>
       </div>
 
@@ -71,10 +68,10 @@ const Hero = () => {
       {/* Bottom Information */}
       <div className="flex justify-between items-end">
         <div className="text-xs font-mono">
-          <div>{exhibition?.next_exhibition || 'NEXT EXHIBITION'}</div>
-          <div>{exhibition?.next_exhibition_date || 'JULY 3 | 13:00 - 19:00'}</div>
-          <div className="mt-1">{exhibition?.next_exhibition_address || 'RARE Collective Shop - Berlin'}</div>
-          <div>{exhibition?.next_exhibition_address ? '' : 'Kopernikusstraße 21, 10245 Berlin'}</div>
+          <div>{exhibition?.next_exhibition ?? 'NEXT EXHIBITION'}</div>
+          <div>{exhibition?.next_exhibition_date ?? 'JULY 3 | 13:00 - 19:00'}</div>
+          <div className="mt-1">{exhibition?.next_exhibition_address ?? 'RARE Collective Shop - Berlin'}</div>
+          {!exhibition && <div>Kopernikusstraße 21, 10245 Berlin</div>}
         </div>
 
         <div className="text-right text-xs font-mono">

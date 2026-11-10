@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { supabase } from "@/lib/supabaseClient";
+import { api } from "@/lib/api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -10,24 +10,20 @@ import { useToast } from "@/components/ui/use-toast";
 
 // Define the type for an event
 export type Event = {
-  id: number;
+  id: string;
   created_at: string;
   title: string;
-  event_date: string;
+  event_date: string | null;
   location: string | null;
   description: string | null;
+  link_url: string | null;
+  exhibition_group: 'next' | 'latest';
+  position: number;
 };
 
-const fetchEvents = async () => {
-  const { data, error } = await supabase.from('events').select('*').order('event_date', { ascending: false });
-  if (error) throw new Error(error.message);
-  return data;
-};
+const fetchEvents = () => api.list<Event>('events');
 
-const deleteEvent = async (id: number) => {
-  const { error } = await supabase.from('events').delete().eq('id', id);
-  if (error) throw error;
-};
+const deleteEvent = (id: string) => api.remove('events', id);
 
 const EventsPage = () => {
   const queryClient = useQueryClient();
@@ -61,7 +57,7 @@ const EventsPage = () => {
     setIsFormOpen(true);
   };
 
-  const handleDeleteEvent = (id: number) => {
+  const handleDeleteEvent = (id: string) => {
     if (window.confirm("Are you sure you want to delete this event?")) {
       deleteMutation.mutate(id);
     }
@@ -76,7 +72,7 @@ const EventsPage = () => {
             <DialogTrigger asChild>
               <Button onClick={handleNewEventClick}>Add New Event</Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent aria-describedby={undefined} className="max-h-[90vh] overflow-y-auto sm:max-w-[425px]">
               <DialogHeader>
                 <DialogTitle>{editingEvent ? 'Edit Event' : 'Add New Event'}</DialogTitle>
               </DialogHeader>

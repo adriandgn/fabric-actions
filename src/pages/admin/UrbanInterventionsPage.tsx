@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { supabase } from "@/lib/supabaseClient";
+import { api } from "@/lib/api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -16,19 +16,12 @@ export type UrbanIntervention = {
   date: string;
   image_url: string | null;
   description: string | null;
-  order: number | null;
+  position: number;
 };
 
-const fetchUrbanInterventions = async () => {
-  const { data, error } = await supabase.from('urban_interventions').select('*').order('created_at', { ascending: false });
-  if (error) throw new Error(error.message);
-  return data;
-};
+const fetchUrbanInterventions = () => api.list<UrbanIntervention>('urban_interventions');
 
-const deleteUrbanIntervention = async (id: string) => { // Changed id type
-  const { error } = await supabase.from('urban_interventions').delete().eq('id', id);
-  if (error) throw error;
-};
+const deleteUrbanIntervention = (id: string) => api.remove('urban_interventions', id);
 
 const UrbanInterventionsPage = () => {
   const queryClient = useQueryClient();
@@ -77,7 +70,7 @@ const UrbanInterventionsPage = () => {
             <DialogTrigger asChild>
               <Button onClick={handleNewUrbanInterventionClick}>Add New Urban Intervention</Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent aria-describedby={undefined} className="max-h-[90vh] overflow-y-auto sm:max-w-[425px]">
               <DialogHeader>
                 <DialogTitle>{editingUrbanIntervention ? 'Edit Urban Intervention' : 'Add New Urban Intervention'}</DialogTitle>
               </DialogHeader>

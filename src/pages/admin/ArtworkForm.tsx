@@ -3,48 +3,34 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabaseClient";
+import { api } from "@/lib/api";
 import { Artwork } from "./ArtworksPage";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
 
 interface ArtworkFormProps {
   artwork?: Artwork | null;
   onSuccess: () => void;
 }
 
-type FormData = Omit<Artwork, 'created_at' | 'id'> & { id?: number; image?: FileList };
+type FormData = Omit<Artwork, 'created_at' | 'id'> & { id?: string; image?: FileList };
 
 const upsertArtwork = async (artworkData: FormData) => {
   let imageUrl: string | null = artworkData.image_url || null;
 
   if (artworkData.image && artworkData.image.length > 0) {
-    const file = artworkData.image[0];
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-    if (userError) throw userError;
-    if (!user) throw new Error('Sign in before uploading an artwork image.');
-
-    const filePath = `${user.id}/${Date.now()}_${file.name}`;
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('artwork_images')
-      .upload(filePath, file, { cacheControl: '3600', upsert: false });
-
-    if (uploadError) throw uploadError;
-    imageUrl = supabase.storage.from('artwork_images').getPublicUrl(uploadData.path).data.publicUrl;
+    imageUrl = (await api.upload(artworkData.image[0])).url;
   }
 
-  const { image, ...rest } = artworkData; // Remove image FileList from data sent to DB
-  const { data, error } = await supabase.from('artworks').upsert({ ...rest, image_url: imageUrl }).select();
-  if (error) throw error;
-  return data;
+  const { image, id, ...rest } = artworkData;
+  return api.save('artworks', { ...rest, year: Number.isFinite(rest.year) ? rest.year : null, image_url: imageUrl }, id);
 };
 
 const ArtworkForm = ({ artwork, onSuccess }: ArtworkFormProps) => {
   const queryClient = useQueryClient();
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     defaultValues: artwork
-      ? { id: artwork.id, title: artwork.title, year: artwork.year, description: artwork.description, image_url: artwork.image_url }
-      : { title: '', year: undefined, description: '', image_url: '' },
+      ? { id: artwork.id, title: artwork.title, year: artwork.year, description: artwork.description, image_url: artwork.image_url, position: artwork.position }
+      : { title: '', year: undefined, description: '', image_url: '', position: 0 },
   });
 
   const mutation = useMutation({

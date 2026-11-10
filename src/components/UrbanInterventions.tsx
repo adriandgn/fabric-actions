@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import ImageLightbox from './ImageLightbox';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/lib/supabaseClient';
+import { api } from '@/lib/api';
 
 // Define the type for an urban intervention (same as in UrbanInterventionsPage.tsx)
 export type UrbanIntervention = {
@@ -12,14 +12,10 @@ export type UrbanIntervention = {
   date: string;
   image_url: string | null;
   description: string | null;
-  order: number | null;
+  position: number;
 };
 
-const fetchUrbanInterventions = async () => {
-  const { data, error } = await supabase.from('urban_interventions').select('*').order('order', { ascending: true }); // Order by 'order' field
-  if (error) throw new Error(error.message);
-  return data;
-};
+const fetchUrbanInterventions = () => api.list<UrbanIntervention>('urban_interventions');
 
 const UrbanInterventions = () => {
   const [lightboxOpen, setLightboxOpen] = useState(false);

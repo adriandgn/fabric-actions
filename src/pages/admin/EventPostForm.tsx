@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/lib/supabaseClient';
+import { api } from '@/lib/api';
 import { useToast } from '@/components/ui/use-toast';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -21,9 +21,9 @@ interface EventPostFormProps {
 interface EventPost {
   id?: string;
   title: string;
-  subtitle?: string;
+  subtitle?: string | null;
   content: string;
-  order?: number;
+  position?: number;
 }
 
 interface RichTextEditorProps {
@@ -40,7 +40,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({ value, onChange }) => {
 
   useEffect(() => {
     if (editor && editor.getHTML() !== value) {
-      editor.commands.setContent(value || '', false);
+      editor.commands.setContent(value || '', { emitUpdate: false });
     }
   }, [editor, value]);
 
@@ -55,9 +55,9 @@ const formSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   subtitle: z.string().optional(),
   content: z.string().min(1, 'Content is required'),
-  order: z.preprocess(
+  position: z.preprocess(
     (val) => (val === '' ? undefined : Number(val)),
-    z.number().int().positive('Order must be a positive integer').optional()
+    z.number().int().min(0).optional()
   ),
 });
 
@@ -65,19 +65,18 @@ const EventPostForm: React.FC<EventPostFormProps> = ({ eventPost, onSuccess }) =
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
-  const { register, handleSubmit, formState: { errors }, reset, control } = useForm<EventPost>({
+  const { register, handleSubmit, formState: { errors }, reset, control } = useForm<z.input<typeof formSchema>, unknown, z.output<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: eventPost || { title: '', subtitle: '', content: '', order: undefined },
+    defaultValues: eventPost ? { ...eventPost, subtitle: eventPost.subtitle ?? '' } : { title: '', subtitle: '', content: '', position: 0 },
   });
 
   React.useEffect(() => {
-    reset(eventPost || { title: '', subtitle: '', content: '', order: undefined });
+    reset(eventPost ? { ...eventPost, subtitle: eventPost.subtitle ?? '' } : { title: '', subtitle: '', content: '', position: 0 });
   }, [eventPost, reset]);
 
   const upsertMutation = useMutation({
-    mutationFn: async (data: EventPost) => {
-      const { error } = await supabase.from('event_posts').upsert(data);
-      if (error) throw error;
+    mutationFn: async (content: z.output<typeof formSchema>) => {
+      await api.save('event_posts', { ...content, position: content.position ?? 0 }, eventPost?.id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['event_posts'] });
@@ -96,10 +95,8 @@ const EventPostForm: React.FC<EventPostFormProps> = ({ eventPost, onSuccess }) =
     },
   });
 
-  const onSubmit = (data: EventPost) => {
-    // If eventPost exists, it means we are editing, so include the id
-    const dataToUpsert = eventPost ? { ...data, id: eventPost.id } : data;
-    upsertMutation.mutate(dataToUpsert);
+  const onSubmit = (data: z.output<typeof formSchema>) => {
+    upsertMutation.mutate(data);
   };
 
   return (
@@ -126,9 +123,9 @@ const EventPostForm: React.FC<EventPostFormProps> = ({ eventPost, onSuccess }) =
         {errors.content && <p className="text-red-500 text-sm">{errors.content.message}</p>}
       </div>
       <div>
-        <Label htmlFor="order">Order</Label>
-        <Input id="order" type="number" {...register('order')} />
-        {errors.order && <p className="text-red-500 text-sm">{errors.order.message}</p>}
+        <Label htmlFor="position">Order</Label>
+        <Input id="position" type="number" {...register('position')} />
+        {errors.position && <p className="text-red-500 text-sm">{errors.position.message}</p>}
       </div>
       <DialogFooter>
         <Button type="submit" disabled={upsertMutation.isPending}>

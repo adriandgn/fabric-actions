@@ -1,6 +1,6 @@
 import React from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/lib/supabaseClient';
+import { api } from '@/lib/api';
 import { useToast } from '@/components/ui/use-toast';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -12,11 +12,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 // Define schema for exhibition info
 const exhibitionInfoSchema = z.object({
-  id: z.string().uuid().optional(),
-  last_exhibition: z.string().optional(),
-  next_exhibition: z.string().optional(),
-  next_exhibition_date: z.string().optional(),
-  next_exhibition_address: z.string().optional(),
+  id: z.number().optional(),
+  last_exhibition: z.string().default(''),
+  header_label: z.string().default(''),
+  next_exhibition: z.string().default(''),
+  next_exhibition_date: z.string().default(''),
+  next_exhibition_address: z.string().default(''),
 });
 
 type ExhibitionInfo = z.infer<typeof exhibitionInfoSchema>;
@@ -28,24 +29,19 @@ const ExhibitionInfoPage: React.FC = () => {
   // Fetch exhibition info
   const { data, isLoading, error } = useQuery<ExhibitionInfo[]> ({
     queryKey: ['exhibition_info'],
-    queryFn: async () => {
-      const { data, error } = await supabase.from('exhibition_info').select('*');
-      if (error) throw error;
-      return data;
-    },
+    queryFn: () => api.list<ExhibitionInfo>('exhibition_info'),
   });
 
-  const { register, handleSubmit, reset } = useForm<ExhibitionInfo>({
+  const { register, handleSubmit, reset } = useForm<z.input<typeof exhibitionInfoSchema>, unknown, ExhibitionInfo>({
     resolver: zodResolver(exhibitionInfoSchema),
-    values: data && data.length > 0 ? data[0] : {}, // Pre-fill form if data exists
+    values: data && data.length > 0 ? data[0] : { last_exhibition: '', header_label: '', next_exhibition: '', next_exhibition_date: '', next_exhibition_address: '' },
   });
 
   // Mutation for updating exhibition info
   const updateMutation = useMutation({
     mutationFn: async (info: ExhibitionInfo) => {
-      const { data, error } = await supabase.from('exhibition_info').upsert(info).select();
-      if (error) throw error;
-      return data;
+      const { id, ...content } = info;
+      return api.save('exhibition_info', content, 1);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['exhibition_info'] });
@@ -89,6 +85,10 @@ const ExhibitionInfoPage: React.FC = () => {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <div>
+              <Label htmlFor="header_label">Header label</Label>
+              <Input id="header_label" {...register('header_label')} />
+            </div>
             <div>
               <Label htmlFor="last_exhibition">Last Exhibition</Label>
               <Input id="last_exhibition" {...register('last_exhibition')} />

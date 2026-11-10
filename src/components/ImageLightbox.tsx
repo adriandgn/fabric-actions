@@ -15,21 +15,20 @@ interface ImageLightboxProps {
 
 const ImageLightbox: React.FC<ImageLightboxProps> = ({ images, startIndex, onClose }) => {
   const [currentIndex, setCurrentIndex] = useState(startIndex);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loadedSrc, setLoadedSrc] = useState<string | null>(null);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
 
   const currentImage = images[currentIndex];
+  const isLoading = loadedSrc !== currentImage?.src;
 
   const goToPrevious = useCallback(() => {
     if (currentIndex > 0) {
-      setIsLoading(true);
       setCurrentIndex(prevIndex => prevIndex - 1);
     }
   }, [currentIndex]);
 
   const goToNext = useCallback(() => {
     if (currentIndex < images.length - 1) {
-      setIsLoading(true);
       setCurrentIndex(prevIndex => prevIndex + 1);
     }
   }, [currentIndex, images.length]);
@@ -52,13 +51,12 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({ images, startIndex, onClo
   }, [onClose, goToPrevious, goToNext]);
 
   useEffect(() => {
-    // Reset loading state when image source changes
-    setIsLoading(true);
+    if (!currentImage) return;
     const mainImage = new Image();
     mainImage.src = currentImage.src;
-    mainImage.onload = () => setIsLoading(false);
+    mainImage.onload = () => setLoadedSrc(currentImage.src);
     mainImage.onerror = () => {
-        setIsLoading(false); // Handle error case, e.g., show a placeholder or error message
+        setLoadedSrc(currentImage.src);
         console.error(`Failed to load image: ${currentImage.src}`);
     }
 
@@ -71,7 +69,8 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({ images, startIndex, onClo
       const nextImage = new Image();
       nextImage.src = images[currentIndex + 1].src;
     }
-  }, [currentIndex, images, currentImage.src]);
+    return () => { mainImage.onload = null; mainImage.onerror = null; };
+  }, [currentIndex, images, currentImage]);
 
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
     setTouchStartX(e.touches[0].clientX);

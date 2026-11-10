@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { supabase } from "@/lib/supabaseClient";
+import { api } from "@/lib/api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -10,24 +10,18 @@ import { useToast } from "@/components/ui/use-toast";
 
 // Define the type for an artwork
 export type Artwork = {
-  id: number;
+  id: string;
   created_at: string;
   title: string;
   year: number | null;
   description: string | null;
   image_url: string | null;
+  position: number;
 };
 
-const fetchArtworks = async () => {
-  const { data, error } = await supabase.from('artworks').select('*').order('created_at', { ascending: false });
-  if (error) throw new Error(error.message);
-  return data;
-};
+const fetchArtworks = () => api.list<Artwork>('artworks');
 
-const deleteArtwork = async (id: number) => {
-  const { error } = await supabase.from('artworks').delete().eq('id', id);
-  if (error) throw error;
-};
+const deleteArtwork = (id: string) => api.remove('artworks', id);
 
 const ArtworksPage = () => {
   const queryClient = useQueryClient();
@@ -61,7 +55,7 @@ const ArtworksPage = () => {
     setIsFormOpen(true);
   };
 
-  const handleDeleteArtwork = (id: number) => {
+  const handleDeleteArtwork = (id: string) => {
     if (window.confirm("Are you sure you want to delete this artwork?")) {
       deleteMutation.mutate(id);
     }
@@ -76,7 +70,7 @@ const ArtworksPage = () => {
             <DialogTrigger asChild>
               <Button onClick={handleNewArtworkClick}>Add New Artwork</Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent aria-describedby={undefined} className="max-h-[90vh] overflow-y-auto sm:max-w-[425px]">
               <DialogHeader>
                 <DialogTitle>{editingArtwork ? 'Edit Artwork' : 'Add New Artwork'}</DialogTitle>
               </DialogHeader>

@@ -1,15 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
 import ImageLightbox from './ImageLightbox';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { supabase } from "@/lib/supabaseClient";
+import { api } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { Artwork } from "../pages/admin/ArtworksPage"; // Reusing the type
 
-const fetchArtworks = async (): Promise<Artwork[]> => {
-  const { data, error } = await supabase.from('artworks').select('*').order('created_at', { ascending: false });
-  if (error) throw new Error(error.message);
-  return data;
-};
+const fetchArtworks = () => api.list<Artwork>('artworks');
 
 const Studiopieces = () => {
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -139,7 +135,7 @@ const Studiopieces = () => {
                       />
                     </div>
                     <h3 className="font-bold text-lg mb-1">{piece.title}</h3>
-                    <p className="text-sm text-gray-400">{piece.year}</p>
+                    <p className="text-sm text-gray-400">{piece.description || piece.year}</p>
                   </div>
                 </div>
               ))}

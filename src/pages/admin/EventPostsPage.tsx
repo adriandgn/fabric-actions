@@ -1,6 +1,6 @@
 import React from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/lib/supabaseClient';
+import { api } from '@/lib/api';
 import { useToast } from '@/components/ui/use-toast';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -22,7 +22,7 @@ interface EventPost {
   title: string;
   subtitle?: string;
   content: string;
-  order?: number;
+  position?: number;
 }
 
 const EventPostsPage: React.FC = () => {
@@ -34,19 +34,12 @@ const EventPostsPage: React.FC = () => {
   // Fetch event posts
   const { data: posts, isLoading, error } = useQuery<EventPost[]> ({
     queryKey: ['event_posts'],
-    queryFn: async () => {
-      const { data, error } = await supabase.from('event_posts').select('*').order('order', { ascending: true });
-      if (error) throw error;
-      return data;
-    },
+    queryFn: () => api.list<EventPost>('event_posts'),
   });
 
   // Mutation for deleting an event post
   const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const { error } = await supabase.from('event_posts').delete().eq('id', id);
-      if (error) throw error;
-    },
+    mutationFn: (id: string) => api.remove('event_posts', id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['event_posts'] });
       toast({
@@ -96,7 +89,7 @@ const EventPostsPage: React.FC = () => {
             <DialogTrigger asChild>
               <Button onClick={handleAdd}>Add New Event Post</Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-3xl md:max-w-4xl lg:max-w-5xl">
+            <DialogContent aria-describedby={undefined} className="max-h-[90vh] overflow-y-auto sm:max-w-3xl md:max-w-4xl lg:max-w-5xl">
               <DialogHeader>
                 <DialogTitle>{currentPost ? 'Edit Event Post' : 'Add New Event Post'}</DialogTitle>
               </DialogHeader>
@@ -126,7 +119,7 @@ const EventPostsPage: React.FC = () => {
                   <TableRow key={post.id}>
                     <TableCell className="font-medium">{post.title}</TableCell>
                     <TableCell>{post.subtitle}</TableCell>
-                    <TableCell>{post.order}</TableCell>
+                    <TableCell>{post.position}</TableCell>
                     <TableCell>
                       <Button variant="outline" size="sm" onClick={() => handleEdit(post)} className="mr-2">
                         Edit

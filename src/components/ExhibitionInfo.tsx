@@ -1,22 +1,20 @@
 
-import { supabase } from "@/lib/supabaseClient";
+import { api } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
-import { Event } from "../pages/admin/EventsPage"; // Reusing the type
 
-const fetchEvents = async (): Promise<Event[]> => {
-  const { data, error } = await supabase.from('events').select('*').order('event_date', { ascending: false });
-  if (error) throw new Error(error.message);
-  return data;
-};
+type PublicEvent = { id: string; title: string; event_date: string | null; exhibition_group: 'next' | 'latest'; link_url: string | null };
+const fetchEvents = () => api.list<PublicEvent>('events');
 
 const ExhibitionInfo = () => {
-  const { data: events, isLoading, error } = useQuery<Event[]>({
+  const { data: events, isLoading, error } = useQuery<PublicEvent[]>({
     queryKey: ['publicEvents'],
     queryFn: fetchEvents
   });
 
-  const nextEvents = events?.filter(event => new Date(event.event_date) >= new Date()) || [];
-  const latestEvents = events?.filter(event => new Date(event.event_date) < new Date()) || [];
+  const nextEvents = events?.filter(event => event.exhibition_group === 'next') || [];
+  const latestEvents = events?.filter(event => event.exhibition_group === 'latest') || [];
+
+  const eventLabel = (event: PublicEvent) => <>{event.title}{event.event_date ? ` - ${new Date(`${event.event_date.slice(0, 10)}T00:00:00`).toLocaleDateString()}` : ''}</>;
 
   return (
     <section className="px-6 md:px-12 py-16 md:py-24">
@@ -58,7 +56,7 @@ const ExhibitionInfo = () => {
                 <ul className="text-xs font-mono space-y-2">
                   {nextEvents.length > 0 ? (
                     nextEvents.map(event => (
-                      <li key={event.id}>→ {event.title} - {new Date(event.event_date).toLocaleDateString()}</li>
+                      <li key={event.id}>→ {event.link_url ? <a href={event.link_url}>{eventLabel(event)}</a> : eventLabel(event)}</li>
                     ))
                   ) : (
                     <li>No upcoming exhibitions.</li>
@@ -72,7 +70,7 @@ const ExhibitionInfo = () => {
                 <ul className="text-xs font-mono space-y-2">
                   {latestEvents.length > 0 ? (
                     latestEvents.map(event => (
-                      <li key={event.id}>→ {event.title} - {new Date(event.event_date).toLocaleDateString()}</li>
+                      <li key={event.id}>→ {event.link_url ? <a href={event.link_url}>{eventLabel(event)}</a> : eventLabel(event)}</li>
                     ))
                   ) : (
                     <li>No past exhibitions.</li>

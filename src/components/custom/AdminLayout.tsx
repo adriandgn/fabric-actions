@@ -1,12 +1,12 @@
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/lib/supabaseClient";
+import { api } from "@/lib/api";
 
 const AdminLayout = () => {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    await api.logout();
     navigate('/admin/login');
   };
 

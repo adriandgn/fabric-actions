@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabaseClient";
+import { api } from "@/lib/api";
 import { UrbanIntervention } from "./UrbanInterventionsPage"; // Changed import
 import { useForm } from "react-hook-form";
 import { z } from "zod"; // Import zod
@@ -18,11 +18,11 @@ interface UrbanInterventionFormProps {
 const urbanInterventionSchema = z.object({
   title: z.string().min(1, "Title is required"),
   date: z.string().min(1, "Date is required"),
-  image_url: z.union([z.string().url("Invalid URL"), z.literal("")]).nullable().optional(),
+  image_url: z.string().nullable().optional(),
   description: z.string().nullable().optional(),
-  order: z.preprocess(
+  position: z.preprocess(
     (value) => value === "" || value === undefined ? undefined : Number(value),
-    z.number().int().min(0).nullable().optional()
+    z.number().int().min(0).optional()
   ),
   image: z.custom<FileList>((value) => typeof FileList !== 'undefined' && value instanceof FileList)
 });
@@ -33,32 +33,23 @@ const upsertUrbanIntervention = async (urbanInterventionData: FormData, existing
   let imageUrl: string | null = urbanInterventionData.image_url || null;
 
   if (urbanInterventionData.image && urbanInterventionData.image.length > 0) {
-    const file = urbanInterventionData.image[0];
-    const filePath = `urban_intervention_images/${Date.now()}_${file.name}`;
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('urban_intervention_images') // Changed bucket name
-      .upload(filePath, file, { cacheControl: '3600', upsert: false });
-
-    if (uploadError) throw uploadError;
-    imageUrl = supabase.storage.from('urban_intervention_images').getPublicUrl(uploadData.path).data.publicUrl;
+    imageUrl = (await api.upload(urbanInterventionData.image[0])).url;
   }
 
-  const { image, ...rest } = urbanInterventionData; // Remove image FileList from data sent to DB
-  const { data, error } = await supabase.from('urban_interventions').upsert({ id: existingId, ...rest, image_url: imageUrl }).select(); // Added id for upsert
-  if (error) throw error;
-  return data;
+  const { image, ...rest } = urbanInterventionData;
+  return api.save('urban_interventions', { ...rest, position: rest.position ?? 0, image_url: imageUrl }, existingId);
 };
 
 const UrbanInterventionForm = ({ urbanIntervention, onSuccess }: UrbanInterventionFormProps) => {
   const queryClient = useQueryClient();
-  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
+  const { register, handleSubmit, formState: { errors } } = useForm<z.input<typeof urbanInterventionSchema>, unknown, FormData>({
     resolver: zodResolver(urbanInterventionSchema), // Add zodResolver
     defaultValues: {
       title: urbanIntervention?.title || '',
       date: urbanIntervention?.date || '',
       image_url: urbanIntervention?.image_url || '',
       description: urbanIntervention?.description || '',
-      order: urbanIntervention?.order || undefined,
+      position: urbanIntervention?.position ?? 0,
     },
   });
 
@@ -92,9 +83,9 @@ const UrbanInterventionForm = ({ urbanIntervention, onSuccess }: UrbanInterventi
         {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
       </div>
       <div className="grid gap-2">
-        <Label htmlFor="order">Order</Label>
-        <Input id="order" type="number" {...register("order")} />
-        {errors.order && <p className="text-red-500 text-sm">{errors.order.message}</p>}
+        <Label htmlFor="position">Order</Label>
+        <Input id="position" type="number" {...register("position")} />
+        {errors.position && <p className="text-red-500 text-sm">{errors.position.message}</p>}
       </div>
       <div className="grid gap-2">
         <Label htmlFor="image">Image</Label>

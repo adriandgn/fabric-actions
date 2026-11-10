@@ -1,6 +1,6 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/lib/supabaseClient';
+import { api } from '@/lib/api';
 import DOMPurify from 'dompurify';
 
 interface EventPost {
@@ -9,17 +9,13 @@ interface EventPost {
   title: string;
   subtitle?: string;
   content: string;
-  order?: number;
+  position?: number;
 }
 
 const EventPostsSection: React.FC = () => {
   const { data: posts, isLoading, error } = useQuery<EventPost[]> ({
     queryKey: ['public_event_posts'],
-    queryFn: async () => {
-      const { data, error } = await supabase.from('event_posts').select('*').order('order', { ascending: true });
-      if (error) throw error;
-      return data;
-    },
+    queryFn: () => api.list<EventPost>('event_posts'),
   });
 
   if (isLoading) {
@@ -50,7 +46,7 @@ const EventPostsSection: React.FC = () => {
   }
 
   return (
-    <section className="px-6 md:px-12 py-16 md:py-24">
+    <section id="about-the-event" className="px-6 md:px-12 py-16 md:py-24">
       <h2 className="text-3xl md:text-4xl font-bold font-grotesk mb-12">ABOUT THE EVENT</h2>
       <div className="space-y-8">
         {posts.map((post) => (

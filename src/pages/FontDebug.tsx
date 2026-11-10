@@ -19,10 +19,10 @@ const FontDebug = () => {
       <h1 className="text-3xl font-bold font-anthony text-white mb-8">
         Anthony Font Debug
       </h1>
-      
+
       <div className="grid grid-cols-8 gap-2">
         {allChars.map((char, index) => (
-          <div 
+          <div
             key={index}
             className="w-[100px] h-[100px] border border-gray-700 flex items-center justify-center bg-gray-900"
           >

@@ -96,14 +96,14 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({ images, startIndex, onClo
   };
 
   const handleTouchEnd = () => {
-    // It's generally better to handle swipe logic in onTouchMove 
+    // It's generally better to handle swipe logic in onTouchMove
     // and reset touchStartX there to avoid issues with partial swipes.
     // If you want to ensure it resets if no swipe is detected, you can keep this.
-    // setTouchStartX(null); 
+    // setTouchStartX(null);
   };
 
   if (!currentImage) {
-    return null; 
+    return null;
   }
 
   return (
@@ -145,7 +145,7 @@ const ImageLightbox: React.FC<ImageLightboxProps> = ({ images, startIndex, onClo
             src={currentImage.src}
             alt={currentImage.alt}
             className={`${styles.lightboxImage} ${isLoading ? styles.imageLoading : styles.imageLoaded}`}
-            style={{ visibility: isLoading ? 'hidden' : 'visible' }} 
+            style={{ visibility: isLoading ? 'hidden' : 'visible' }}
           />
         </div>
         {currentImage.title && (

@@ -45,14 +45,14 @@ const ArtistsList = () => {
           ABOUT THE EVENT
         </h2>
       </div>
-      
+
       <div className="space-y-12">
         {/* About Section */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="md:col-span-2">
             <h3 className="text-lg font-bold font-grotesk mb-4">
             SOFT LANDING - RARE FASHION WEEK EVENT            </h3>
-            
+
             <p className="text-sm font-mono leading-relaxed mb-6">
             Wind down after hours with style, rhythm, and one-of-a-kind creations.<br /><br />
 For Fashion Week, RARE invites you to a styling event like no other—an immersive journey through texture, rhythm, and transformation.
@@ -60,7 +60,7 @@ For Fashion Week, RARE invites you to a styling event like no other—an immersi
 <br /><p className="text-sm font-mono leading-relaxed">
 ✨ Flying Fashion ✨ An evening of spinning silhouettes, dreamy soundscapes, and upcycled design.
 Experience unique creations in motion as we explore the intersection of sound, movement, and fashion.
-Why should fashion remain confined by gravity? Step into a space where garments float, sound sways, and time seems to slow. 
+Why should fashion remain confined by gravity? Step into a space where garments float, sound sways, and time seems to slow.
 </p>
 <br /><p className="text-sm font-mono leading-relaxed">
 🌀 Featuring pieces by:<br />

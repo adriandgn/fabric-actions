@@ -1,16 +1,17 @@
 import { useState, useRef, useEffect } from 'react';
-import ImageLightbox from './ImageLightbox'; // Added import for ImageLightbox
+import ImageLightbox from './ImageLightbox';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { supabase } from "@/lib/supabaseClient";
+import { useQuery } from "@tanstack/react-query";
+import { Artwork } from "../pages/admin/ArtworksPage"; // Reusing the type
 
-interface Piece {
-  id: number;
-  title: string;
-  date: string;
-  image: string;
-}
+const fetchArtworks = async (): Promise<Artwork[]> => {
+  const { data, error } = await supabase.from('artworks').select('*').order('created_at', { ascending: false });
+  if (error) throw new Error(error.message);
+  return data;
+};
 
 const Studiopieces = () => {
-  // State for ImageLightbox
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -18,50 +19,19 @@ const Studiopieces = () => {
   const [isMobile, setIsMobile] = useState(false);
   const carouselRef = useRef<HTMLDivElement>(null);
 
-  // Only the first 3 pieces
-  const pieces: Piece[] = [
-    {
-      id: 1,
-      title: 'Prêt-Art-porter, Dress on a frame',
-      date: 'Framed yet wearable dress, 165 x 64 cm',
-      image: '/img/studio-1.png'
-    },
-    {
-      id: 2,
-      title: 'Urban Spill 1',
-      date: 'Garments sewn on canvas, 118 x 78 cm',
-      image: '/img/studio-2.png'
-    },
-    {
-      id: 3,
-      title: 'Urban Spill 2',
-      date: 'Garments sewn on canvas, 78 x 50 cm',
-      image: '/img/studio-3.png'
-    },
-    {
-      id: 4,
-      title: 'Fatberg Stalactite',
-      date: 'Hanging textiles and shoes installation, 140 × 30 cm',
-      image: '/img/studio-4.png'
-    },
-    {
-      id: 5,
-      title: '10 Years of Therapy I & II',
-      date: 'Mixed media, 150 × 60 cm each',
-      image: '/img/studio-5.jpg'
-    }
-  ];
+  const { data: pieces, isLoading, error } = useQuery<Artwork[]>({
+    queryKey: ['publicArtworks'],
+    queryFn: fetchArtworks
+  });
 
-  const totalItems = pieces.length;
+  const totalItems = pieces ? pieces.length : 0;
 
-  // Prepare images for Lightbox
-  const lightboxImages = pieces.map(piece => ({
-    src: piece.image,
-    alt: piece.title, // Using title as alt, consider adding a dedicated alt field for better accessibility
-    title: piece.title
-  }));
+  const lightboxImages = pieces ? pieces.map(piece => ({
+    src: piece.image_url || '',
+    alt: piece.title || '',
+    title: piece.title || ''
+  })) : [];
 
-  // Functions to handle Lightbox visibility
   const openLightbox = (index: number) => {
     setSelectedImageIndex(index);
     setLightboxOpen(true);
@@ -71,7 +41,6 @@ const Studiopieces = () => {
     setLightboxOpen(false);
   };
 
-  // Handle window resize and set items per view
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 768) {
@@ -88,15 +57,13 @@ const Studiopieces = () => {
 
     window.addEventListener('resize', handleResize);
     handleResize();
-    
+
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-  
-  // Calculate visible items and navigation
+
   const visibleItems = isMobile ? 1 : itemsPerView;
   const maxIndex = Math.max(0, totalItems - visibleItems);
-  
-  // Handle navigation based on device type
+
   const next = () => {
     setCurrentIndex(prevIndex => Math.min(prevIndex + (isMobile ? 1 : itemsPerView), maxIndex));
   };
@@ -120,63 +87,66 @@ const Studiopieces = () => {
             </p>
           </div>
         </div>
-      
-      <div className="relative">
-        {/* Navigation Arrows */}
-        <button 
-          onClick={prev}
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-black/50 rounded-full text-white hover:bg-white hover:text-black transition-colors"
-          aria-label="Previous piece"
-        >
-          <ChevronLeft size={24} />
-        </button>
-        
-        <button 
-          onClick={next}
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-black/50 rounded-full text-white hover:bg-white hover:text-black transition-colors"
-          aria-label="Next piece"
-        >
-          <ChevronRight size={24} />
-        </button>
-        
-        {/* Carousel */}
-        <div 
-          ref={carouselRef}
-          className="overflow-hidden"
-        >
-          <div 
-            className="flex transition-transform duration-300 ease-in-out"
-            style={{
-              transform: `translateX(-${(currentIndex * 100) / totalItems}%)`,
-              width: `${(totalItems * 100) / visibleItems}%`
-            }}
+
+      {isLoading && <p>Loading studio pieces...</p>}
+      {error && <p className="text-red-500">Error loading studio pieces: {error.message}</p>}
+      {pieces && pieces.length === 0 && !isLoading && <p>No studio pieces found.</p>}
+      {pieces && pieces.length > 0 && (
+        <div className="relative">
+          {/* Navigation Arrows */}
+          <button
+            onClick={prev}
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-black/50 rounded-full text-white hover:bg-white hover:text-black transition-colors"
+            aria-label="Previous piece"
           >
-            {pieces.map((piece) => (
-              <div 
-                key={piece.id}
-                className={`px-2 transition-all duration-300 cursor-pointer`}
-                style={{ width: `${100 / visibleItems}%` }}
-                onClick={() => openLightbox(pieces.findIndex(p => p.id === piece.id))} // Added onClick to open lightbox
-              >
-                <div className="brutalist-border p-2 sm:p-4 h-full flex flex-col">
-                  <div className="aspect-square overflow-hidden mb-2 sm:mb-4 max-h-[60vh] sm:max-h-none">
-                    <img 
-                      src={piece.image} 
-                      alt={piece.title}
-                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                      style={{ maxHeight: 'calc(100vh - 300px)' }}
-                    />
+            <ChevronLeft size={24} />
+          </button>
+
+          <button
+            onClick={next}
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 p-2 bg-black/50 rounded-full text-white hover:bg-white hover:text-black transition-colors"
+            aria-label="Next piece"
+          >
+            <ChevronRight size={24} />
+          </button>
+
+          {/* Carousel */}
+          <div
+            ref={carouselRef}
+            className="overflow-hidden"
+          >
+            <div
+              className="flex transition-transform duration-300 ease-in-out"
+              style={{
+                transform: `translateX(-${(currentIndex * 100) / totalItems}%)`,
+                width: `${(totalItems * 100) / visibleItems}%`
+              }}
+            >
+              {pieces.map((piece, index) => (
+                <div
+                  key={piece.id}
+                  className={`px-2 transition-all duration-300 cursor-pointer`}
+                  style={{ width: `${100 / visibleItems}%` }}
+                  onClick={() => openLightbox(index)} // Use index for lightbox
+                >
+                  <div className="brutalist-border p-2 sm:p-4 h-full flex flex-col">
+                    <div className="aspect-square overflow-hidden mb-2 sm:mb-4 max-h-[60vh] sm:max-h-none">
+                      <img
+                        src={piece.image_url || ''}
+                        alt={piece.title || ''}
+                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                        style={{ maxHeight: 'calc(100vh - 300px)' }}
+                      />
+                    </div>
+                    <h3 className="font-bold text-lg mb-1">{piece.title}</h3>
+                    <p className="text-sm text-gray-400">{piece.year}</p>
                   </div>
-                  <h3 className="font-bold text-lg mb-1">{piece.title}</h3>
-                  <p className="text-sm text-gray-400">{piece.date}</p>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
-      </div>
-      
-
+      )}
     </section>
 
       {/* Render ImageLightbox conditionally */}

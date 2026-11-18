@@ -13,7 +13,7 @@ test('migrations create a working database once and preserve subsequent edits', 
     await migrate(pool);
     assert.equal((await pool.query('SELECT title FROM artworks WHERE position = 1')).rows[0].title, 'Edited');
     assert.equal((await pool.query('SELECT count(*)::int AS count FROM urban_interventions')).rows[0].count, 3);
-    assert.equal((await pool.query('SELECT count(*)::int AS count FROM schema_migrations')).rows[0].count, 3);
+    assert.equal((await pool.query('SELECT count(*)::int AS count FROM schema_migrations')).rows[0].count, 4);
   } finally {
     await pool.end();
   }

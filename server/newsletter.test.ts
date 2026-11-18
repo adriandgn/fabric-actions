@@ -21,3 +21,12 @@ test('newsletter validates input and sends the Brevo key only to the server-side
   assert.deepEqual(JSON.parse(String(sent?.body)), { email: 'person@example.com', listIds: [42], updateEnabled: true });
   assert.ok(!JSON.stringify(response.headers).includes('server-only-key'));
 });
+
+test('newsletter reports missing configuration and provider failure without exposing secrets', async () => {
+  const options = { password: 'a long test password', sessionSecret: 'a test secret with at least 32 characters', store: new session.MemoryStore(), allowedOrigins: ['https://example.test'], secureCookies: false };
+  const missing = createApp(options);
+  await request(missing).post('/api/newsletter').set('Origin', 'https://example.test').send({ email: 'person@example.com' }).expect(503);
+  const failure = createApp({ ...options, newsletter: { apiKey: 'private-test-key', listId: 1, fetch: async () => new Response('private-test-key', { status: 401 }) } });
+  const response = await request(failure).post('/api/newsletter').set('Origin', 'https://example.test').send({ email: 'person@example.com' }).expect(502);
+  assert.ok(!response.text.includes('private-test-key'));
+});

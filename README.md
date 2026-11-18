@@ -55,6 +55,10 @@ Open [http://localhost:8080](http://localhost:8080); the admin login is at `/adm
 
 The protected admin panel manages events, artworks, exhibition information, event posts, and urban interventions. The Node API reads and writes PostgreSQL and stores new images in `UPLOAD_DIR`. Seed images remain bundled in `public/img`.
 
+Exhibitions are classified in Berlin time from their start and optional end dates. Undated exhibitions are hidden; an exhibition without an end date remains current once started. Existing artwork and intervention dates are preserved during migration; enter a month and year when editing them. Use the arrows in the administration lists to change their display order.
+
+Newsletter subscriptions require both Brevo variables at runtime. A missing configuration produces HTTP 503; a provider error or timeout produces HTTP 502. Check the application runtime logs for the provider status without sharing credentials or subscriber addresses.
+
 ### Coolify deployment
 
 1. Create a Docker Compose application from this repository and select `compose.yaml`. Configure `POSTGRES_PASSWORD`, `ADMIN_PASSWORD`, `SESSION_SECRET`, `BREVO_API_KEY`, and `BREVO_LIST_ID` in Coolify; `.env.example` lists the expected variables. Never commit real values. The application requires the database password, admin password and session secret at startup; Brevo values must be supplied together.

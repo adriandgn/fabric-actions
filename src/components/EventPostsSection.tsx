@@ -21,7 +21,7 @@ const EventPostsSection: React.FC = () => {
   if (isLoading) {
     return (
       <section className="px-6 md:px-12 py-16 md:py-24">
-        <h2 className="text-3xl md:text-4xl font-bold font-grotesk mb-12">ABOUT THE EVENT</h2>
+        <h2 className="text-3xl md:text-4xl font-bold font-grotesk mb-12">NEW EXHIBITION</h2>
         <p>Loading event posts...</p>
       </section>
     );
@@ -30,7 +30,7 @@ const EventPostsSection: React.FC = () => {
   if (error) {
     return (
       <section className="px-6 md:px-12 py-16 md:py-24">
-        <h2 className="text-3xl md:text-4xl font-bold font-grotesk mb-12">ABOUT THE EVENT</h2>
+        <h2 className="text-3xl md:text-4xl font-bold font-grotesk mb-12">NEW EXHIBITION</h2>
         <p className="text-red-500">Error loading event posts: {error.message}</p>
       </section>
     );
@@ -39,7 +39,7 @@ const EventPostsSection: React.FC = () => {
   if (!posts || posts.length === 0) {
     return (
       <section className="px-6 md:px-12 py-16 md:py-24">
-        <h2 className="text-3xl md:text-4xl font-bold font-grotesk mb-12">ABOUT THE EVENT</h2>
+        <h2 className="text-3xl md:text-4xl font-bold font-grotesk mb-12">NEW EXHIBITION</h2>
         <p>No event posts found.</p>
       </section>
     );
@@ -47,7 +47,7 @@ const EventPostsSection: React.FC = () => {
 
   return (
     <section id="about-the-event" className="px-6 md:px-12 py-16 md:py-24">
-      <h2 className="text-3xl md:text-4xl font-bold font-grotesk mb-12">ABOUT THE EVENT</h2>
+      <h2 className="text-3xl md:text-4xl font-bold font-grotesk mb-12">NEW EXHIBITION</h2>
       <div className="space-y-8">
         {posts.map((post) => (
           <div key={post.id} className="border-b border-gray-700 pb-8">

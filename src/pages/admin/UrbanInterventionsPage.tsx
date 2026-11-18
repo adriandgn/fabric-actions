@@ -6,6 +6,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import UrbanInterventionForm from "./UrbanInterventionForm"; // Changed import
+import { ReorderButtons } from './ReorderButtons';
 import { useToast } from "@/components/ui/use-toast";
 
 // Define the type for an urban intervention
@@ -14,6 +15,8 @@ export type UrbanIntervention = {
   created_at: string;
   title: string;
   date: string;
+  month?: number | null;
+  year?: number | null;
   image_url: string | null;
   description: string | null;
   position: number;
@@ -93,7 +96,7 @@ const UrbanInterventionsPage = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {urbanInterventions.map((urbanIntervention) => (
+                {urbanInterventions.map((urbanIntervention, index) => (
                   <TableRow key={urbanIntervention.id}>
                     <TableCell className="font-medium">{urbanIntervention.title}</TableCell>
                     <TableCell>{urbanIntervention.date}</TableCell>
@@ -103,6 +106,7 @@ const UrbanInterventionsPage = () => {
                       )}
                     </TableCell>
                     <TableCell className="text-right">
+                      <ReorderButtons collection="urban_interventions" items={urbanInterventions} index={index} />
                       <Button variant="outline" size="sm" className="mr-2" onClick={() => handleEditUrbanInterventionClick(urbanIntervention)}>Edit</Button>
                       <Button variant="destructive" size="sm" onClick={() => handleDeleteUrbanIntervention(urbanIntervention.id)}>Delete</Button>
                     </TableCell>

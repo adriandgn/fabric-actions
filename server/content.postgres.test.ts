@@ -22,8 +22,15 @@ test('content is publicly readable and writes require an authorized valid reques
     await request(app).get('/api/health').expect(200);
     const seeded = await request(app).get('/api/content/artworks').expect(200);
     assert.equal(seeded.body.length, 5);
+    await request(app).post('/api/content/artworks/reorder').set('Origin', origin).send({ ids: [] }).expect(401);
     await request(app).post('/api/content/events').set('Origin', origin).send({ title: 'Unauthorized' }).expect(401);
     await agent.post('/api/session/login').set('Origin', origin).send({ password: options.password }).expect(204);
+    const ids = seeded.body.map((row: { id: string }) => String(row.id));
+    await agent.post('/api/content/artworks/reorder').set('Origin', origin).send({ ids: ids.slice(1) }).expect(409);
+    await agent.post('/api/content/artworks/reorder').set('Origin', origin).send({ ids: [...ids].reverse() }).expect(204);
+    const reordered = await request(app).get('/api/content/artworks').expect(200);
+    assert.deepEqual(reordered.body.map((row: { id: string }) => String(row.id)), [...ids].reverse());
+    await agent.post('/api/content/events').set('Origin', origin).send({ title: 'Invalid range', event_date: '2025-07-03', end_date: '2025-07-02' }).expect(400);
     await agent.post('/api/content/events').set('Origin', origin).send({ title: '', unexpected: 'x' }).expect(400);
     const created = await agent.post('/api/content/events').set('Origin', origin)
       .send({ title: 'New event', exhibition_group: 'latest', position: 3 }).expect(201);
@@ -37,8 +44,8 @@ test('content is publicly readable and writes require an authorized valid reques
     await agent.post('/api/content/events').set('Origin', origin)
       .send({ title: 'Invalid date', event_date: '2025-99-99' }).expect(400);
     for (const [collection, payload] of [
-      ['artworks', { title: 'Piece', description: 'Description', image_url: '/img/studio-1.png', position: 4 }],
-      ['urban_interventions', { title: 'Intervention', date: 'JUNE 1', image_url: '/img/studio-1.png', position: 4 }],
+      ['artworks', { title: 'Piece', year: 2024, month: 6, description: 'Description', image_url: '/img/studio-1.png', position: 4 }],
+      ['urban_interventions', { title: 'Intervention', date: 'JUNE 1', year: 2024, month: 6, image_url: '/img/studio-1.png', position: 4 }],
       ['event_posts', { title: 'Post', content: '<p>Content</p>', position: 4 }],
     ] as const) {
       const item = await agent.post(`/api/content/${collection}`).set('Origin', origin).send(payload).expect(201);

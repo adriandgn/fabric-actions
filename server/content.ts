@@ -8,12 +8,12 @@ const image = z.string().regex(/^\/(img|uploads)\/[a-zA-Z0-9_.-]+$/).nullable().
 const position = z.number().int().min(0).max(100000).default(0);
 
 const schemas = {
-  events: z.object({ title: text, event_date: z.string().date().nullable().optional(), location: optionalText,
+  events: z.object({ title: text, event_date: z.string().date().nullable().optional(), end_date: z.string().date().nullable().optional(), location: optionalText,
     description: optionalText, link_url: z.string().max(2048).regex(/^(#|https:\/\/)/).nullable().optional(),
-    exhibition_group: z.enum(['next', 'latest']).default('latest'), position }).strict(),
-  artworks: z.object({ title: text, year: z.number().int().min(1).max(9999).nullable().optional(),
+    exhibition_group: z.enum(['next', 'latest']).default('latest'), position }).strict().refine(data => !data.event_date || !data.end_date || data.end_date >= data.event_date),
+  artworks: z.object({ title: text, year: z.number().int().min(1).max(9999), month: z.number().int().min(1).max(12),
     description: optionalText, image_url: image, position }).strict(),
-  urban_interventions: z.object({ title: text, date: text, description: optionalText, image_url: image, position }).strict(),
+  urban_interventions: z.object({ title: text, date: text, month: z.number().int().min(1).max(12), year: z.number().int().min(1).max(9999), description: optionalText, image_url: image, position }).strict(),
   event_posts: z.object({ title: text, subtitle: optionalText, content: z.string().min(1).max(100000), position }).strict(),
   exhibition_info: z.object({ last_exhibition: z.string().max(500), header_label: z.string().max(500),
     next_exhibition: z.string().max(500), next_exhibition_date: z.string().max(500),
@@ -39,6 +39,24 @@ export function contentRouter(pool: Pool) {
   router.use((req, res, next) => {
     if (!req.session.admin) { res.sendStatus(401); return; }
     next();
+  });
+
+  router.post('/:collection/reorder', async (req, res) => {
+    const { collection } = req.params;
+    if (collection !== 'artworks' && collection !== 'urban_interventions') { res.sendStatus(404); return; }
+    const parsed = z.object({ ids: z.array(z.union([z.string(), z.number()]).transform(String)).min(1).max(10000) }).strict().safeParse(req.body);
+    if (!parsed.success || parsed.data.ids.some(id => !validId(id)) || new Set(parsed.data.ids).size !== parsed.data.ids.length) { res.sendStatus(400); return; }
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      await client.query(`LOCK TABLE ${collection} IN EXCLUSIVE MODE`);
+      const current = await client.query(`SELECT id FROM ${collection}`);
+      const existing = new Set(current.rows.map(row => String(row.id)));
+      if (existing.size !== parsed.data.ids.length || parsed.data.ids.some(id => !existing.has(id))) { await client.query('ROLLBACK'); res.sendStatus(409); return; }
+      for (const [index, id] of parsed.data.ids.entries()) await client.query(`UPDATE ${collection} SET position = $1 WHERE id = $2`, [index + 1, id]);
+      await client.query('COMMIT');
+      res.sendStatus(204);
+    } catch (error) { await client.query('ROLLBACK'); throw error; } finally { client.release(); }
   });
 
   router.post('/:collection', async (req, res) => {

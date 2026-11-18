@@ -1,8 +1,9 @@
 
 import { api } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
+import { exhibitionStatus } from '@/lib/exhibitions';
 
-type PublicEvent = { id: string; title: string; event_date: string | null; exhibition_group: 'next' | 'latest'; link_url: string | null };
+type PublicEvent = { id: string; title: string; event_date: string | null; end_date?: string | null; exhibition_group: 'next' | 'latest'; link_url: string | null };
 const fetchEvents = () => api.list<PublicEvent>('events');
 
 const ExhibitionInfo = () => {
@@ -11,8 +12,10 @@ const ExhibitionInfo = () => {
     queryFn: fetchEvents
   });
 
-  const nextEvents = events?.filter(event => event.exhibition_group === 'next') || [];
-  const latestEvents = events?.filter(event => event.exhibition_group === 'latest') || [];
+  const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Berlin', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+  const nextEvents = events?.filter(event => exhibitionStatus(event.event_date, event.end_date, today) === 'next') || [];
+  const currentEvents = events?.filter(event => exhibitionStatus(event.event_date, event.end_date, today) === 'current') || [];
+  const latestEvents = events?.filter(event => exhibitionStatus(event.event_date, event.end_date, today) === 'latest') || [];
 
   const eventLabel = (event: PublicEvent) => <>{event.title}{event.event_date ? ` - ${new Date(`${event.event_date.slice(0, 10)}T00:00:00`).toLocaleDateString()}` : ''}</>;
 
@@ -49,6 +52,10 @@ const ExhibitionInfo = () => {
           {error && <p className="text-red-500">Error loading exhibitions: {error.message}</p>}
           {events && (
             <>
+              {currentEvents.length > 0 && <div className="brutalist-border p-6">
+                <h3 className="text-lg font-bold font-grotesk mb-4">CURRENT EXHIBITIONS</h3>
+                <ul className="text-xs font-mono space-y-2">{currentEvents.map(event => <li key={event.id}>→ {event.link_url ? <a href={event.link_url}>{eventLabel(event)}</a> : eventLabel(event)}</li>)}</ul>
+              </div>}
               <div className="brutalist-border p-6">
                 <h3 className="text-lg font-bold font-grotesk mb-4">
                   NEXT EXHIBITIONS

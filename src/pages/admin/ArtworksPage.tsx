@@ -6,6 +6,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import ArtworkForm from "./ArtworkForm";
+import { ReorderButtons } from './ReorderButtons';
 import { useToast } from "@/components/ui/use-toast";
 
 // Define the type for an artwork
@@ -14,6 +15,7 @@ export type Artwork = {
   created_at: string;
   title: string;
   year: number | null;
+  month?: number | null;
   description: string | null;
   image_url: string | null;
   position: number;
@@ -93,7 +95,7 @@ const ArtworksPage = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {artworks.map((artwork) => (
+                {artworks.map((artwork, index) => (
                   <TableRow key={artwork.id}>
                     <TableCell className="font-medium">{artwork.title}</TableCell>
                     <TableCell>{artwork.year}</TableCell>
@@ -103,6 +105,7 @@ const ArtworksPage = () => {
                       )}
                     </TableCell>
                     <TableCell className="text-right">
+                      <ReorderButtons collection="artworks" items={artworks} index={index} />
                       <Button variant="outline" size="sm" className="mr-2" onClick={() => handleEditArtworkClick(artwork)}>Edit</Button>
                       <Button variant="destructive" size="sm" onClick={() => handleDeleteArtwork(artwork.id)}>Delete</Button>
                     </TableCell>

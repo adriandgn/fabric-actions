@@ -36,6 +36,7 @@ test('the seeded site and all admin sections work with the local API', async ({ 
   await page.getByRole('row', { name: /BERLIN FASHION WEEK - RARE COLLECTIVE/ }).getByRole('button', { name: 'Edit' }).click();
   let dialog = page.getByRole('dialog');
   await dialog.getByLabel('Title').fill('Updated exhibition');
+  await dialog.getByLabel('Date', { exact: true }).fill('2099-01-01');
   await dialog.getByRole('button', { name: 'Save Event' }).click();
   await expect(page.getByRole('row', { name: /Updated exhibition/ })).toBeVisible();
 
@@ -43,16 +44,24 @@ test('the seeded site and all admin sections work with the local API', async ({ 
   await page.getByRole('row', { name: /Urban Spill 1/ }).getByRole('button', { name: 'Edit' }).click();
   dialog = page.getByRole('dialog');
   await dialog.getByLabel('Title').fill('Updated artwork');
+  await dialog.getByLabel('Year').fill('2024');
+  await dialog.getByLabel('Month').fill('6');
   await dialog.getByLabel('Image').setInputFiles('public/img/studio-2.png');
   await dialog.getByRole('button', { name: 'Save Artwork' }).click();
   await expect(page.getByRole('row', { name: /Updated artwork/ })).toBeVisible();
+  await page.getByRole('button', { name: 'Move Updated artwork up' }).click();
+  await expect(page.locator('tbody tr').first()).toContainText('Updated artwork');
 
   await page.getByRole('link', { name: 'Interventions' }).click();
   await page.getByRole('row', { name: /Fabric Remnants/ }).getByRole('button', { name: 'Edit' }).click();
   dialog = page.getByRole('dialog');
   await dialog.getByLabel('Title').fill('Updated intervention');
+  await dialog.getByLabel('Year').fill('2024');
+  await dialog.getByLabel('Month').fill('6');
   await dialog.getByRole('button', { name: 'Save Urban Intervention' }).click();
   await expect(page.getByRole('row', { name: /Updated intervention/ })).toBeVisible();
+  await page.getByRole('button', { name: 'Move Updated intervention up' }).click();
+  await expect(page.locator('tbody tr').nth(1)).toContainText('Updated intervention');
 
   await page.getByRole('link', { name: 'Posts' }).click();
   await page.getByRole('row', { name: /SOFT LANDING/ }).getByRole('button', { name: 'Edit' }).click();

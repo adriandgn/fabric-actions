@@ -16,14 +16,14 @@ type FormData = Omit<Event, 'created_at' | 'id'> & { id?: string };
 
 const upsertEvent = async (eventData: FormData) => {
   const { id, ...data } = eventData;
-  return api.save('events', { ...data, event_date: data.event_date || null, link_url: data.link_url || null }, id);
+  return api.save('events', { ...data, event_date: data.event_date || null, end_date: data.end_date || null, link_url: data.link_url || null }, id);
 };
 
 const EventForm = ({ event, onSuccess }: EventFormProps) => {
   const queryClient = useQueryClient();
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     defaultValues: event
-      ? { id: event.id, title: event.title, event_date: event.event_date || '', location: event.location,
+      ? { id: event.id, title: event.title, event_date: event.event_date?.slice(0, 10) || '', end_date: event.end_date?.slice(0, 10) || '', location: event.location,
           description: event.description, link_url: event.link_url || '', exhibition_group: event.exhibition_group, position: event.position }
       : { title: '', event_date: '', location: '', description: '', link_url: '', exhibition_group: 'latest', position: 0 },
   });
@@ -53,10 +53,8 @@ const EventForm = ({ event, onSuccess }: EventFormProps) => {
         {errors.event_date && <p className="text-red-500 text-sm">{errors.event_date.message}</p>}
       </div>
       <div className="grid gap-2">
-        <Label htmlFor="exhibition_group">Exhibition group</Label>
-        <select id="exhibition_group" className="rounded border p-2 text-black" {...register('exhibition_group')}>
-          <option value="next">Next</option><option value="latest">Latest</option>
-        </select>
+        <Label htmlFor="end_date">End date (optional)</Label>
+        <Input id="end_date" type="date" {...register("end_date")} />
       </div>
       <div className="grid gap-2">
         <Label htmlFor="link_url">Link (optional)</Label>

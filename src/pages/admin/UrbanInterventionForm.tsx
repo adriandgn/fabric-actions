@@ -17,7 +17,9 @@ interface UrbanInterventionFormProps {
 // Define Zod schema for validation
 const urbanInterventionSchema = z.object({
   title: z.string().min(1, "Title is required"),
-  date: z.string().min(1, "Date is required"),
+  date: z.string(),
+  month: z.coerce.number().int().min(1).max(12),
+  year: z.coerce.number().int().min(1).max(9999),
   image_url: z.string().nullable().optional(),
   description: z.string().nullable().optional(),
   position: z.preprocess(
@@ -37,7 +39,7 @@ const upsertUrbanIntervention = async (urbanInterventionData: FormData, existing
   }
 
   const { image, ...rest } = urbanInterventionData;
-  return api.save('urban_interventions', { ...rest, position: rest.position ?? 0, image_url: imageUrl }, existingId);
+  return api.save('urban_interventions', { ...rest, date: rest.date || `${rest.month}/${rest.year}`, position: rest.position ?? 0, image_url: imageUrl }, existingId);
 };
 
 const UrbanInterventionForm = ({ urbanIntervention, onSuccess }: UrbanInterventionFormProps) => {
@@ -47,6 +49,8 @@ const UrbanInterventionForm = ({ urbanIntervention, onSuccess }: UrbanInterventi
     defaultValues: {
       title: urbanIntervention?.title || '',
       date: urbanIntervention?.date || '',
+      month: urbanIntervention?.month ?? '',
+      year: urbanIntervention?.year ?? '',
       image_url: urbanIntervention?.image_url || '',
       description: urbanIntervention?.description || '',
       position: urbanIntervention?.position ?? 0,
@@ -68,24 +72,24 @@ const UrbanInterventionForm = ({ urbanIntervention, onSuccess }: UrbanInterventi
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4">
       <div className="grid gap-2">
+        <Label htmlFor="month">Month</Label>
+        <Input id="month" type="number" min="1" max="12" {...register('month')} />
+        {errors.month && <p className="text-red-500 text-sm">Month is required (1–12)</p>}
+      </div>
+      <div className="grid gap-2">
+        <Label htmlFor="year">Year</Label>
+        <Input id="year" type="number" min="1" max="9999" {...register('year')} />
+        {errors.year && <p className="text-red-500 text-sm">Year is required</p>}
+      </div>
+      <div className="grid gap-2">
         <Label htmlFor="title">Title</Label>
         <Input id="title" {...register("title")} />
         {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
       </div>
       <div className="grid gap-2">
-        <Label htmlFor="date">Date</Label>
-        <Input id="date" {...register("date")} />
-        {errors.date && <p className="text-red-500 text-sm">{errors.date.message}</p>}
-      </div>
-      <div className="grid gap-2">
         <Label htmlFor="description">Description</Label>
         <Textarea id="description" {...register("description")} />
         {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
-      </div>
-      <div className="grid gap-2">
-        <Label htmlFor="position">Order</Label>
-        <Input id="position" type="number" {...register("position")} />
-        {errors.position && <p className="text-red-500 text-sm">{errors.position.message}</p>}
       </div>
       <div className="grid gap-2">
         <Label htmlFor="image">Image</Label>

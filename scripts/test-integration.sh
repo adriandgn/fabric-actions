@@ -19,7 +19,7 @@ export PGHOST="$task_pg_dir" PGPORT=55439 PGUSER="$(id -un)"
 createdb fabric_seed
 PGDATABASE=fabric_seed psql -v ON_ERROR_STOP=1 -f tests/integration/seed.sql >/dev/null
 createdb fabric_content
-PGDATABASE=fabric_content psql -v ON_ERROR_STOP=1 -f database/001_schema.sql -f database/002_seed.sql >/dev/null
+PGDATABASE=fabric_content psql -v ON_ERROR_STOP=1 -f database/001_schema.sql -f database/002_seed.sql -f database/004_exhibition_end.sql >/dev/null
 PGDATABASE=fabric_content node --import tsx --test server/content.postgres.test.ts
 createdb fabric_sessions
 PGDATABASE=fabric_sessions psql -v ON_ERROR_STOP=1 -f database/001_schema.sql -f database/003_sessions.sql >/dev/null

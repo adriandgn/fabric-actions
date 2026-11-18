@@ -29,7 +29,7 @@ const ArtworkForm = ({ artwork, onSuccess }: ArtworkFormProps) => {
   const queryClient = useQueryClient();
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     defaultValues: artwork
-      ? { id: artwork.id, title: artwork.title, year: artwork.year, description: artwork.description, image_url: artwork.image_url, position: artwork.position }
+      ? { id: artwork.id, title: artwork.title, year: artwork.year, month: artwork.month, description: artwork.description, image_url: artwork.image_url, position: artwork.position }
       : { title: '', year: undefined, description: '', image_url: '', position: 0 },
   });
 
@@ -54,7 +54,13 @@ const ArtworkForm = ({ artwork, onSuccess }: ArtworkFormProps) => {
       </div>
       <div className="grid gap-2">
         <Label htmlFor="year">Year</Label>
-        <Input id="year" type="number" {...register("year", { valueAsNumber: true })} />
+        <Input id="year" type="number" min="1" max="9999" {...register("year", { valueAsNumber: true, required: true })} />
+        {errors.year && <p className="text-red-500 text-sm">Year is required</p>}
+      </div>
+      <div className="grid gap-2">
+        <Label htmlFor="month">Month</Label>
+        <Input id="month" type="number" min="1" max="12" {...register("month", { valueAsNumber: true, required: true, min: 1, max: 12 })} />
+        {errors.month && <p className="text-red-500 text-sm">Month is required (1–12)</p>}
       </div>
       <div className="grid gap-2">
         <Label htmlFor="description">Description</Label>

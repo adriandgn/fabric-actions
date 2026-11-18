@@ -24,7 +24,7 @@ export default defineConfig(() => ({
     setupFiles: './src/test/setup.ts',
 
 
-    include: ['src/**/*.test.tsx'], // Explicitly include unit test files
+    include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
     exclude: ['tests/**/*.spec.ts'], // Exclude Playwright tests
   },
 }));

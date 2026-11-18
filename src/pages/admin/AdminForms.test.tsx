@@ -23,6 +23,12 @@ beforeEach(() => {
 });
 
 describe('content administration', () => {
+  it('preserves a dated event when PostgreSQL returns an ISO timestamp', async () => {
+    renderWithClient(<EventForm onSuccess={vi.fn()} event={{ id: '7', created_at: '', title: 'Exhibition', event_date: '2025-07-03T00:00:00.000Z', location: null, description: null, exhibition_group: 'next', link_url: null, position: 1 }} />);
+    expect(screen.getByLabelText('Date')).toHaveValue('2025-07-03');
+    await userEvent.click(screen.getByRole('button', { name: 'Save Event' }));
+    await waitFor(() => expect(api.save).toHaveBeenCalledWith('events', expect.objectContaining({ event_date: '2025-07-03' }), '7'));
+  });
   it('updates an existing undated event without inventing a date', async () => {
     renderWithClient(<EventForm onSuccess={vi.fn()} event={{ id: '7', created_at: '', title: 'RARE', event_date: null, location: null, description: null, exhibition_group: 'next', link_url: '#about-the-event', position: 1 }} />);
     await userEvent.click(screen.getByRole('button', { name: 'Save Event' }));
@@ -30,7 +36,7 @@ describe('content administration', () => {
   });
 
   it('uploads a new image and updates the existing artwork', async () => {
-    renderWithClient(<ArtworkForm onSuccess={vi.fn()} artwork={{ id: '8', created_at: '', title: 'Spill', year: null, description: 'Canvas', image_url: '/img/studio-1.png', position: 2 }} />);
+    renderWithClient(<ArtworkForm onSuccess={vi.fn()} artwork={{ id: '8', created_at: '', title: 'Spill', year: 2024, month: 6, description: 'Canvas', image_url: '/img/studio-1.png', position: 2 }} />);
     const file = new File(['image'], 'picture.png', { type: 'image/png' });
     await userEvent.upload(screen.getByLabelText('Image'), file);
     await userEvent.click(screen.getByRole('button', { name: 'Save Artwork' }));
@@ -38,8 +44,15 @@ describe('content administration', () => {
     expect(api.upload).toHaveBeenCalledWith(file);
   });
 
+  it('preserves an artwork year and allows changing its order', async () => {
+    renderWithClient(<ArtworkForm onSuccess={vi.fn()} artwork={{ id: '8', created_at: '', title: 'Spill', year: 2024, month: 6, description: 'Canvas', image_url: '/img/studio-1.png', position: 2 }} />);
+    expect(screen.getByLabelText('Year')).toHaveValue(2024);
+    await userEvent.click(screen.getByRole('button', { name: 'Save Artwork' }));
+    await waitFor(() => expect(api.save).toHaveBeenCalledWith('artworks', expect.objectContaining({ year: 2024, month: 6, position: 2, image_url: '/img/studio-1.png' }), '8'));
+  });
+
   it('preserves the local image and order when editing an intervention', async () => {
-    renderWithClient(<UrbanInterventionForm onSuccess={vi.fn()} urbanIntervention={{ id: '9', created_at: '', title: 'Fabric Remnants', date: 'JUNE 1', description: null, image_url: '/img/studio-1.png', position: 3 }} />);
+    renderWithClient(<UrbanInterventionForm onSuccess={vi.fn()} urbanIntervention={{ id: '9', created_at: '', title: 'Fabric Remnants', date: 'JUNE 1', month: 6, year: 2024, description: null, image_url: '/img/studio-1.png', position: 3 }} />);
     await userEvent.click(screen.getByRole('button', { name: 'Save Urban Intervention' }));
     await waitFor(() => expect(api.save).toHaveBeenCalledWith('urban_interventions', expect.objectContaining({ image_url: '/img/studio-1.png', position: 3 }), '9'));
   });

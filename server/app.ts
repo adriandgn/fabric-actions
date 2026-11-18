@@ -102,7 +102,7 @@ export function createApp(options: AppOptions) {
   app.post('/api/newsletter', newsletterLimit, async (req, res) => {
     const parsed = z.object({ email: z.string().trim().email().max(254) }).strict().safeParse(req.body);
     if (!parsed.success) { res.status(400).json({ error: 'Invalid email address' }); return; }
-    if (!options.newsletter) { res.sendStatus(503); return; }
+    if (!options.newsletter) { console.error('Newsletter is not configured'); res.sendStatus(503); return; }
     try {
       const response = await (options.newsletter.fetch ?? fetch)('https://api.brevo.com/v3/contacts', {
         method: 'POST',
@@ -110,8 +110,10 @@ export function createApp(options: AppOptions) {
         body: JSON.stringify({ email: parsed.data.email, listIds: [options.newsletter.listId], updateEnabled: true }),
         signal: AbortSignal.timeout(10000),
       });
+      if (!response.ok) console.error(`Newsletter provider rejected request (HTTP ${response.status})`);
       res.sendStatus(response.ok ? 204 : 502);
     } catch {
+      console.error('Newsletter provider request failed or timed out');
       res.sendStatus(502);
     }
   });

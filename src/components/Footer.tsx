@@ -105,7 +105,7 @@ const Footer = () => {
       {/* Copyright con posicionamiento extraño */}
       <div className="flex justify-between items-end">
         <div className="text-xs font-mono">
-          2025 © fabric[actions]
+          {new Date().getFullYear()} © fabric[actions]
         </div>
 
         <div className="brutalist-border px-4 py-2 text-xs font-mono">

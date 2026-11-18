@@ -12,7 +12,7 @@ describe('public seeded content', () => {
   it('shows exhibition groups, the original piece description and editable event post', async () => {
     const data: Record<string, unknown[]> = {
       exhibition_info: [{ last_exhibition: 'LATEST EXHIBITION - CULTURAL THREADS', header_label: 'BERLIN 2025', next_exhibition: 'NEXT EXHIBITION', next_exhibition_date: 'JULY 3', next_exhibition_address: 'Berlin' }],
-      events: [{ id: '1', title: 'RARE COLLECTIVE', event_date: null, exhibition_group: 'next', link_url: '#about-the-event' }],
+      events: [{ id: '1', title: 'RARE COLLECTIVE', event_date: '2999-07-03', exhibition_group: 'next', link_url: '#about-the-event' }, { id: '2', title: 'Undated exhibition', event_date: null, link_url: null }],
       artworks: [{ id: '1', title: 'Urban Spill 1', description: 'Garments sewn on canvas, 118 x 78 cm', image_url: '/img/studio-2.png' }],
       event_posts: [{ id: '1', title: 'SOFT LANDING', content: '<p>Welcome to the event</p>' }],
     };
@@ -21,6 +21,7 @@ describe('public seeded content', () => {
     render(<QueryClientProvider client={client}><Hero /><ExhibitionInfo /><Studiopieces /><EventPostsSection /></QueryClientProvider>);
     expect(await screen.findByText('BERLIN 2025')).toBeInTheDocument();
     expect(await screen.findByRole('link', { name: /RARE COLLECTIVE/ })).toHaveAttribute('href', '#about-the-event');
+    expect(screen.queryByText('Undated exhibition')).not.toBeInTheDocument();
     expect(await screen.findByText('Garments sewn on canvas, 118 x 78 cm')).toBeInTheDocument();
     expect(await screen.findByText('Welcome to the event')).toBeInTheDocument();
   });

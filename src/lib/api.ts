@@ -19,6 +19,7 @@ export const api = {
   save: <T>(collection: Collection, data: unknown, id?: number | string) =>
     request<T>(`/api/content/${collection}${id === undefined ? '' : `/${id}`}`, json(id === undefined ? 'POST' : 'PUT', data)),
   remove: (collection: Collection, id: number | string) => request<void>(`/api/content/${collection}/${id}`, { method: 'DELETE' }),
+  reorder: (collection: 'artworks' | 'urban_interventions', ids: string[]) => request<void>(`/api/content/${collection}/reorder`, json('POST', { ids })),
   upload: (file: File) => {
     const body = new FormData();
     body.append('image', file);

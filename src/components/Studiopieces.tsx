@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { api } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { Artwork } from "../pages/admin/ArtworksPage"; // Reusing the type
+import { monthYear } from '@/lib/month-year';
 
 const fetchArtworks = () => api.list<Artwork>('artworks');
 
@@ -122,10 +123,10 @@ const Studiopieces = () => {
                 <div
                   key={piece.id}
                   className={`px-2 transition-all duration-300 cursor-pointer`}
-                  style={{ width: `${100 / visibleItems}%` }}
+                  style={{ width: `${100 / totalItems}%` }}
                   onClick={() => openLightbox(index)} // Use index for lightbox
                 >
-                  <div className="brutalist-border p-2 sm:p-4 h-full flex flex-col">
+                  <div className="h-full flex flex-col gap-2">
                     <div className="aspect-square overflow-hidden mb-2 sm:mb-4 max-h-[60vh] sm:max-h-none">
                       <img
                         src={piece.image_url || ''}
@@ -135,7 +136,8 @@ const Studiopieces = () => {
                       />
                     </div>
                     <h3 className="font-bold text-lg mb-1">{piece.title}</h3>
-                    <p className="text-sm text-gray-400">{piece.description || piece.year}</p>
+                    {monthYear(piece.month, piece.year) && <p className="text-xs font-mono uppercase">{monthYear(piece.month, piece.year)}</p>}
+                    <p className="text-sm text-gray-400 line-clamp-3">{piece.description}</p>
                   </div>
                 </div>
               ))}

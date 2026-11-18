@@ -14,6 +14,7 @@ export type Event = {
   created_at: string;
   title: string;
   event_date: string | null;
+  end_date?: string | null;
   location: string | null;
   description: string | null;
   link_url: string | null;

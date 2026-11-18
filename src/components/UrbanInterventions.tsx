@@ -3,6 +3,7 @@ import ImageLightbox from './ImageLightbox';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api';
+import { monthYear } from '@/lib/month-year';
 
 // Define the type for an urban intervention (same as in UrbanInterventionsPage.tsx)
 export type UrbanIntervention = {
@@ -13,6 +14,8 @@ export type UrbanIntervention = {
   image_url: string | null;
   description: string | null;
   position: number;
+  month?: number | null;
+  year?: number | null;
 };
 
 const fetchUrbanInterventions = () => api.list<UrbanIntervention>('urban_interventions');
@@ -134,10 +137,10 @@ Installation arranged directly on the street or on canvases from abandoned wood 
               <div
                 key={intervention.id}
                 className={`px-2 transition-all duration-300 cursor-pointer`}
-                style={{ width: `${100 / visibleItems}%` }}
+                style={{ width: `${100 / totalItems}%` }}
                 onClick={() => openLightbox(interventions.findIndex(i => i.id === intervention.id))} // Added onClick to open lightbox
               >
-                <div className="brutalist-border p-2 sm:p-4 h-full flex flex-col">
+                <div className="h-full flex flex-col gap-2">
                   <div className="aspect-square overflow-hidden mb-2 sm:mb-4 max-h-[60vh] sm:max-h-none">
                     <img
                       src={intervention.image_url || ''} // Use image_url
@@ -147,7 +150,8 @@ Installation arranged directly on the street or on canvases from abandoned wood 
                     />
                   </div>
                   <h3 className="font-bold text-lg mb-1">{intervention.title}</h3>
-                  <p className="text-sm text-gray-400">{intervention.date}</p>
+                  <p className="text-xs font-mono uppercase">{monthYear(intervention.month, intervention.year) || intervention.date}</p>
+                  {intervention.description && <p className="text-sm text-gray-400 line-clamp-3">{intervention.description}</p>}
                 </div>
               </div>
             ))}
